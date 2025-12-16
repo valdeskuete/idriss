@@ -123,6 +123,34 @@
         </div>
     </section>
 
+    <section class="temoignages" id="temoignages">
+        <h2 class="heading">Ce que <span>Nos Clients</span> disent</h2>
+        
+        <div class="temoignages-slider" id="temoignages-slider">
+        </div>
+
+        <h3 class="sub-heading">Partagez Votre Expérience</h3>
+        <form id="add-temoignage-form" class="contact-form" style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid var(--clr-gold); border-radius: 0.8rem;">
+            <p class="form-instruction">Votre avis est précieux. Laissez votre témoignage ci-dessous.</p>
+            
+            <input type="text" id="tem-auteur" placeholder="Votre Nom ou Prénom" required>
+            
+            <select id="tem-note" required style="width: 100%; padding: 1.5rem; margin: 0.7rem 0; border-radius: 0.8rem; color: var(--clr-dark); background-color: var(--clr-white);">
+                <option value="" disabled selected>Note (Satisfaction)</option>
+                <option value="5 étoiles">🌟🌟🌟🌟🌟 (5 étoiles)</option>
+                <option value="4 étoiles">🌟🌟🌟🌟 (4 étoiles)</option>
+                <option value="3 étoiles">🌟🌟🌟 (3 étoiles)</option>
+            </select>
+            
+            <textarea id="tem-citation" cols="30" rows="5" placeholder="Votre Témoignage Détaillé (Citation)" required></textarea>
+            
+            <button type="submit" class="btn">Soumettre mon Témoignage</button>
+
+            <div id="tem-message" style="margin-top: 10px; color: var(--clr-gold);"></div>
+
+        </form>
+    </section>
+
     <section class="contact" id="contact">
         <h2 class="heading">Parlons <span>Bois</span></h2>
 
