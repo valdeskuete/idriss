@@ -8,15 +8,19 @@
 let menuIcon = document.querySelector('#menu-icon');
 let navbar = document.querySelector('.navbar');
 
-menuIcon.onclick = () => {
-    // Bascule entre l'icône burger et la croix
-    menuIcon.classList.toggle('bx-x');
-    navbar.classList.toggle('active');
-};
+if (menuIcon && navbar) {
+    menuIcon.onclick = () => {
+        // Bascule entre l'icône burger et la croix
+        menuIcon.classList.toggle('bx-x');
+        navbar.classList.toggle('active');
+    };
+}
+
 
 /* -------------------- LIEN ACTIF AU SCROLL & STICKY HEADER -------------------- */
 let sections = document.querySelectorAll('section');
 let navLinks = document.querySelectorAll('header nav a');
+let header = document.querySelector('header');
 
 window.onscroll = () => {
     sections.forEach(sec => {
@@ -38,12 +42,15 @@ window.onscroll = () => {
     });
 
     // --- Sticky Navbar 
-    let header = document.querySelector('header');
-    header.classList.toggle('sticky', window.scrollY > 100);
+    if (header) {
+        header.classList.toggle('sticky', window.scrollY > 100);
+    }
 
     // --- Fermer le menu mobile au scroll
-    menuIcon.classList.remove('bx-x');
-    navbar.classList.remove('active');
+    if (menuIcon && navbar) {
+        menuIcon.classList.remove('bx-x');
+        navbar.classList.remove('active');
+    }
 };
 
 
@@ -60,18 +67,18 @@ window.setupPortfolioFilter = function() {
 
     // On parcourt les boutons de filtre
     filterButtons.forEach(button => {
-        // Pour éviter les bugs de double clic après le rechargement, on supprime/ré-ajoute
-        button.onclick = null; 
+        // Supprime l'ancien écouteur avant d'en ajouter un nouveau (sécurité après rechargement)
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
         
-        button.addEventListener('click', (e) => {
+        newButton.addEventListener('click', (e) => {
             const filterValue = e.target.getAttribute('data-filter');
 
             // 1. Mise à jour de la classe active du bouton
-            filterButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
 
             // 2. Déclenche le rechargement des projets via la fonction de Firebase
-            // Cette fonction existe dans firebase-app.js
             if (window.loadProjects) {
                 window.loadProjects(filterValue);
             } else {
@@ -83,74 +90,18 @@ window.setupPortfolioFilter = function() {
 
 
 /* ==================================================================== */
-/* === TÉMOIGNAGES (CONTENU STATIQUE LOCAL) === */
+/* === FONCTION D'INITIALISATION GÉNÉRALE === */
 /* ==================================================================== */
 
-// Référence au conteneur où les témoignages seront affichés
-/*const temoignagesSlider = document.querySelector('#temoignages-slider');
-
-// Données statiques pour les témoignages (pas besoin de Firebase pour ça)
-const temoignagesData = [
-    {
-        citation: "Le travail est d'une finesse incroyable. Le meuble sur mesure a transformé mon salon.",
-        auteur: "M. Tchameni, Douala",
-        note: "5 étoiles"
-    },
-    {
-        citation: "Professionnalisme et respect des délais, la cuisine est parfaite !",
-        auteur: "Mme. Fotso, Yaoundé",
-        note: "5 étoiles"
-    },
-    {
-        citation: "Un artisan passionné et minutieux. J'ai été bluffé par la robustesse.",
-        auteur: "Dr. Njock, Babadjou",
-        note: "5 étoiles"
-    },
-    // Ajoute d'autres témoignages ici si tu le souhaites
-];
-
-function generateTemoignagesHTML() {
-    if (!temoignagesSlider) return; // Sécurité si la section n'existe pas
-    
-    let htmlContent = '';
-
-    temoignagesData.forEach(temoignage => {
-        htmlContent += `
-            <div class="temoignages-item">
-                <i class='bx bxs-quote-alt-left'></i>
-                <p>${temoignage.citation}</p>
-                <h3>${temoignage.auteur}</h3>
-                <span>${temoignage.note}</span>
-            </div>
-        `;
-    });
-
-    temoignagesSlider.innerHTML = htmlContent;
-}/*
-
-/* -------------------- FONCTION D'INITIALISATION -------------------- */
-
 // Exécute les fonctions d'interface une fois que le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialise les événements de filtre (loadProjects dans firebase-app.js prendra le relais)
-    window.setupPortfolioFilter();
-
-    // 2. Génère le HTML des témoignages DYNAMIQUES
-    // Assurez-vous que cette fonction est appelée APRES l'importation de firebase-app.js
-    if (window.loadTestimonials) {
-        window.loadTestimonials();
+    if (window.setupPortfolioFilter) {
+        window.setupPortfolioFilter();
     }
-});
 
-/* -------------------- FONCTION D'INITIALISATION -------------------- */
-
-// Exécute les fonctions d'interface une fois que le DOM est chargé
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialise les événements de filtre (loadProjects dans firebase-app.js prendra le relais)
-    window.setupPortfolioFilter();
-
-    // 2. Génère le HTML des témoignages DYNAMIQUES
-    // Assurez-vous que cette fonction est appelée APRES l'importation de firebase-app.js
+    // 2. Déclenche le chargement des témoignages DYNAMIQUES
+    // loadTestimonials doit être appelée APRES l'importation de firebase-app.js
     if (window.loadTestimonials) {
         window.loadTestimonials();
     }
