@@ -341,36 +341,33 @@ if (temoignageForm) {
         }
     });
 }
-
 /* ==================================================================== */
 /* ============= 5. GESTION DES TÉMOIGNAGES (AFFICHAGE) ============= */
 /* ==================================================================== */
 
 /**
  * Génère le HTML des témoignages à partir de la base de données.
+ * Affiche la liste complète dans l'Admin Panel s'il est actif.
  */
 window.loadTestimonials = async () => {
     const temoignagesSlider = document.querySelector('#temoignages-slider');
-    if (!temoignagesSlider) return;
-
-    temoignagesSlider.innerHTML = '<p class="loading-msg">Chargement des témoignages...</p>';
+    const adminTemoignagesList = document.querySelector('#admin-temoignages-list'); // NOUVEL ÉLÉMENT
 
     const q = query(collection(db, "temoignages"), orderBy("date", "desc"));
     
     try {
         const querySnapshot = await getDocs(q);
-        let htmlContent = '';
+        let publicHtmlContent = '';
+        let adminHtmlContent = '';
         let count = 0;
         
         querySnapshot.forEach((doc) => {
             const temoignage = doc.data();
-            const temoignageId = doc.id; // Récupère l'ID pour une potentielle suppression admin
+            const temoignageId = doc.id; 
             count++;
             
-            // Note: Nous n'affichons pas le bouton de suppression sur le site public
-            // L'ajout d'une interface d'admin pour les témoignages n'est pas prévue ici.
-
-            htmlContent += `
+            // --- 1. Contenu pour le slider public (design simple) ---
+            publicHtmlContent += `
                 <div class="temoignages-item">
                     <i class='bx bxs-quote-alt-left'></i>
                     <p>${temoignage.citation}</p>
@@ -378,18 +375,45 @@ window.loadTestimonials = async () => {
                     <span>${temoignage.note}</span>
                 </div>
             `;
+            
+            // --- 2. Contenu pour l'interface Admin (avec bouton de suppression) ---
+            adminHtmlContent += `
+                <div class="admin-temoignage-box">
+                    <p><strong>De:</strong> ${temoignage.auteur} (${temoignage.note})</p>
+                    <p class="citation-text">"${temoignage.citation}"</p>
+                    <p class="date-text">Soumis le: ${temoignage.date.toDate().toLocaleDateString()}</p>
+                    
+                    <button onclick="window.deleteItem('temoignages', '${temoignageId}')" class="delete-btn">
+                        <i class='bx bx-trash'></i> Supprimer
+                    </button>
+                </div>
+            `;
         });
         
-        if (count === 0) {
-            temoignagesSlider.innerHTML = '<p class="info-msg">Aucun témoignage n\'a encore été publié.</p>';
-        } else {
-            temoignagesSlider.innerHTML = htmlContent;
+        // Mise à jour de l'affichage Public
+        if (temoignagesSlider) {
+            if (count === 0) {
+                temoignagesSlider.innerHTML = '<p class="info-msg">Aucun témoignage n\'a encore été publié.</p>';
+            } else {
+                temoignagesSlider.innerHTML = publicHtmlContent;
+            }
+        }
+        
+        // Mise à jour de l'affichage Admin (si l'élément existe)
+        if (adminTemoignagesList) {
+            if (count === 0) {
+                adminTemoignagesList.innerHTML = '<p class="info-msg">Aucun témoignage à modérer.</p>';
+            } else {
+                adminTemoignagesList.innerHTML = adminHtmlContent;
+            }
         }
 
 
     } catch (error) {
         console.error("Erreur lors du chargement des témoignages :", error);
-        temoignagesSlider.innerHTML = '<p class="error-msg">Impossible de charger les témoignages.</p>';
+        if (temoignagesSlider) {
+            temoignagesSlider.innerHTML = '<p class="error-msg">Impossible de charger les témoignages.</p>';
+        }
     }
 };
 
