@@ -201,12 +201,10 @@
 
                 <textarea id="proj-desc" placeholder="Description du travail effectué..." required></textarea>
                 
-                <label style="display: block; text-align: left; margin-top: 10px; font-weight: 600;">Photo du projet :</label>
-                <input type="file" id="proj-image" accept="image/*" required style="background: var(--clr-white); border: 1px solid #ccc; padding: 10px;">
+                <label style="display: block; text-align: left; margin-top: 10px; font-weight: 600;">URL de la Photo du projet :</label>
+                <input type="text" id="proj-image-url" placeholder="Collez le lien direct de l'image ici (ex: https://site.com/photo.jpg)" required>
 
-                <div style="height: 5px; background: #ccc; margin: 10px 0;">
-                    <div id="upload-progress" style="width: 0%; height: 5px; background: #25D366; transition: width 0.3s;"></div>
-                </div>
+                <div id="upload-progress" class="hidden"></div>
 
                 <button type="submit" class="btn">Publier le projet</button>
             </form>

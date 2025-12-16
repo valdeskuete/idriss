@@ -145,67 +145,112 @@ window.loadProjects = async function(filterCategory = 'all') {
 // Lancement au démarrage
 loadProjects();
 
-
-/* ==================== 3. AJOUT DE PROJET (UPLOAD & SAVE) ==================== */
+/* ==================== 3. AJOUT DE PROJET (SANS UPLOAD) ==================== */
 
 projectForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const title = document.getElementById('proj-title').value;
     const category = document.getElementById('proj-category').value;
     const desc = document.getElementById('proj-desc').value;
-    const file = document.getElementById('proj-image').files[0];
+    // Nouvelle variable pour récupérer l'URL au lieu du fichier
+    const imageUrl = document.getElementById('proj-image-url').value; 
 
-    if (!file) return alert("Veuillez sélectionner une image.");
+    if (!imageUrl || !imageUrl.startsWith('http')) return alert("Veuillez coller une URL d'image valide.");
 
     const submitBtn = projectForm.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.textContent = "Téléchargement en cours (0%)...";
+    submitBtn.textContent = "Publication en cours...";
 
     try {
-        // A. UPLOAD IMAGE VERS FIREBASE STORAGE
-        const fileName = `${Date.now()}_${file.name}`;
-        const storageRef = ref(storage, 'projets/' + fileName);
-        const uploadTask = uploadBytesResumable(storageRef, file);
+        // A. SAUVEGARDE DES DONNÉES DANS FIRESTORE (sans passer par l'upload)
+        await addDoc(collection(db, "projets"), {
+            titre: title,
+            categorie: category,
+            description: desc,
+            // Utilisation directe de l'URL fournie
+            imageUrl: imageUrl, 
+            date: new Date()
+        });
 
-        // Suivi de la progression (Barre de progression visuelle)
-        uploadTask.on('state_changed', 
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                uploadProgress.style.width = progress + '%';
-                submitBtn.textContent = `Téléchargement en cours (${Math.round(progress)}%)...`;
-            }, 
-            (error) => {
-                throw new Error("Erreur d'upload : " + error.message);
-            }, 
-            async () => {
-                // B. SAUVEGARDE DES DONNÉES DANS FIRESTORE
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        alert("✅ Projet ajouté avec succès ! (Utilisation d'une URL externe)");
+        projectForm.reset();
+        submitBtn.textContent = "Publier le projet";
+        submitBtn.disabled = false;
 
-                await addDoc(collection(db, "projets"), {
-                    titre: title,
-                    categorie: category,
-                    description: desc,
-                    imageUrl: downloadURL,
-                    date: new Date()
-                });
-
-                alert("✅ Projet ajouté avec succès !");
-                projectForm.reset();
-                uploadProgress.style.width = '0%';
-                submitBtn.textContent = "Publier le projet";
-                submitBtn.disabled = false;
-                
-                // Recharger la galerie pour voir le nouveau projet
-                loadProjects();
-            }
-        );
+        // Recharger la galerie pour voir le nouveau projet
+        loadProjects();
 
     } catch (error) {
-        console.error("Erreur critique :", error);
+        console.error("Erreur critique lors de l'ajout:", error);
         alert("Erreur lors de l'ajout : " + error.message);
         submitBtn.disabled = false;
         submitBtn.textContent = "Publier le projet";
-        uploadProgress.style.width = '0%';
     }
 });
+
+/* ==================== 3. AJOUT DE PROJET (UPLOAD & SAVE) ==================== */
+
+    /*projectForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const title = document.getElementById('proj-title').value;
+        const category = document.getElementById('proj-category').value;
+        const desc = document.getElementById('proj-desc').value;
+        const file = document.getElementById('proj-image').files[0];
+
+        if (!file) return alert("Veuillez sélectionner une image.");
+
+        const submitBtn = projectForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Téléchargement en cours (0%)...";
+
+        try {
+            // A. UPLOAD IMAGE VERS FIREBASE STORAGE
+            const fileName = `${Date.now()}_${file.name}`;
+            const storageRef = ref(storage, 'projets/' + fileName);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            // Suivi de la progression (Barre de progression visuelle)
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    uploadProgress.style.width = progress + '%';
+                    submitBtn.textContent = `Téléchargement en cours (${Math.round(progress)}%)...`;
+                }, 
+                (error) => {
+                    throw new Error("Erreur d'upload : " + error.message);
+                }, 
+                async () => {
+                    // B. SAUVEGARDE DES DONNÉES DANS FIRESTORE
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+                    await addDoc(collection(db, "projets"), {
+                        titre: title,
+                        categorie: category,
+                        description: desc,
+                        imageUrl: downloadURL,
+                        date: new Date()
+                    });
+
+                    alert("✅ Projet ajouté avec succès !");
+                    projectForm.reset();
+                    uploadProgress.style.width = '0%';
+                    submitBtn.textContent = "Publier le projet";
+                    submitBtn.disabled = false;
+                    
+                    // Recharger la galerie pour voir le nouveau projet
+                    loadProjects();
+                }
+            );
+
+        } catch (error) {
+            console.error("Erreur critique :", error);
+            alert("Erreur lors de l'ajout : " + error.message);
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Publier le projet";
+            uploadProgress.style.width = '0%';
+        }
+    });*/
+
+
