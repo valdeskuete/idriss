@@ -74,11 +74,6 @@ window.updateStatus = async (id, status) => {
 /* ============= 3. GESTION DE L'AUTHENTIFICATION (ADMIN) ============= */
 /* ==================================================================== */
 
-/* ==================================================================== */
-/* ============= 3. GESTION DE L'AUTHENTIFICATION (ADMIN) ============= */
-/* ==================================================================== */
-
-// Récupération des éléments DOM, qui sont disponibles car le script est chargé après le HTML
 const adminTrigger = document.getElementById('admin-trigger');
 const loginModal = document.getElementById('login-modal');
 const loginForm = document.getElementById('login-form');
