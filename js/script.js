@@ -87,7 +87,7 @@ window.setupPortfolioFilter = function() {
 /* ==================================================================== */
 
 // Référence au conteneur où les témoignages seront affichés
-const temoignagesSlider = document.querySelector('#temoignages-slider');
+/*const temoignagesSlider = document.querySelector('#temoignages-slider');
 
 // Données statiques pour les témoignages (pas besoin de Firebase pour ça)
 const temoignagesData = [
@@ -126,8 +126,21 @@ function generateTemoignagesHTML() {
     });
 
     temoignagesSlider.innerHTML = htmlContent;
-}
+}/*
 
+/* -------------------- FONCTION D'INITIALISATION -------------------- */
+
+// Exécute les fonctions d'interface une fois que le DOM est chargé
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Initialise les événements de filtre (loadProjects dans firebase-app.js prendra le relais)
+    window.setupPortfolioFilter();
+
+    // 2. Génère le HTML des témoignages DYNAMIQUES
+    // Assurez-vous que cette fonction est appelée APRES l'importation de firebase-app.js
+    if (window.loadTestimonials) {
+        window.loadTestimonials();
+    }
+});
 
 /* -------------------- FONCTION D'INITIALISATION -------------------- */
 
