@@ -297,6 +297,52 @@ if (contactForm) {
 }
 
 /* ==================================================================== */
+/* ============= 6. SOUMISSION DES TÉMOIGNAGES PAR LE CLIENT ============= */
+/* ==================================================================== */
+
+const temoignageForm = document.querySelector('#add-temoignage-form');
+
+if (temoignageForm) {
+    temoignageForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const auteur = document.getElementById('tem-auteur').value;
+        const note = document.getElementById('tem-note').value;
+        const citation = document.getElementById('tem-citation').value;
+        const messageDiv = document.getElementById('tem-message');
+
+        const submitBtn = temoignageForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Envoi en cours...";
+        messageDiv.textContent = "";
+
+        try {
+            // Sauvegarde le témoignage dans la collection 'temoignages'
+            await addDoc(collection(db, "temoignages"), {
+                auteur: auteur,
+                note: note,
+                citation: citation,
+                date: new Date(),
+                // Vous pouvez ajouter ici un champ 'approuve: false' si vous voulez modérer les avis
+            });
+
+            messageDiv.textContent = "✅ Merci ! Votre témoignage a été soumis et sera visible après le rechargement de la page.";
+            temoignageForm.reset();
+            
+            // Rafraîchir l'affichage (optionnel, mais sympa)
+            window.loadTestimonials();
+
+        } catch (error) {
+            console.error("Erreur lors de la soumission du témoignage :", error);
+            messageDiv.textContent = "❌ Erreur lors de la soumission : " + error.message;
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Soumettre mon Témoignage";
+        }
+    });
+}
+
+/* ==================================================================== */
 /* ============= 5. GESTION DES TÉMOIGNAGES (AFFICHAGE) ============= */
 /* ==================================================================== */
 
