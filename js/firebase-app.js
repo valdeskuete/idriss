@@ -253,4 +253,48 @@ projectForm.addEventListener('submit', async (e) => {
         }
     });*/
 
+    /* ==================================================================== */
+/* ============= 4. GESTION DU FORMULAIRE DE CONTACT (MESSAGES) ============= */
+/* ==================================================================== */
+
+// Référence au formulaire de contact
+const contactForm = document.querySelector('#contact-form');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('contact-name').value;
+        const email = document.getElementById('contact-email').value;
+        const subject = document.getElementById('contact-subject').value;
+        const message = document.getElementById('contact-message').value;
+
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Envoi en cours...";
+
+        try {
+            // Sauvegarde le message dans la collection 'messages'
+            await addDoc(collection(db, "messages"), {
+                nom: name,
+                email: email,
+                sujet: subject,
+                message: message,
+                date: new Date(),
+                traite: false // Pour indiquer qu'il est nouveau
+            });
+
+            alert("✅ Votre message a été envoyé avec succès !");
+            contactForm.reset();
+
+        } catch (error) {
+            console.error("Erreur lors de l'envoi du message :", error);
+            alert("Erreur lors de l'envoi du message : " + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Envoyer le message";
+        }
+    });
+}
+
 
