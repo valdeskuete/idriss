@@ -297,4 +297,48 @@ if (contactForm) {
     });
 }
 
+/* ==================================================================== */
+/* ============= 5. GESTION DES TÉMOIGNAGES (AFFICHAGE) ============= */
+/* ==================================================================== */
+
+/**
+ * Génère le HTML des témoignages à partir de la base de données.
+ */
+window.loadTestimonials = async () => {
+    const temoignagesSlider = document.querySelector('#temoignages-slider');
+    if (!temoignagesSlider) return;
+
+    // Utiliser getDocs pour récupérer les témoignages une seule fois au chargement
+    const q = query(collection(db, "temoignages"), orderBy("date", "desc"));
+    
+    try {
+        const querySnapshot = await getDocs(q);
+        let htmlContent = '';
+        
+        querySnapshot.forEach((doc) => {
+            const temoignage = doc.data();
+            
+            htmlContent += `
+                <div class="temoignages-item">
+                    <i class='bx bxs-quote-alt-left'></i>
+                    <p>${temoignage.citation}</p>
+                    <h3>${temoignage.auteur}</h3>
+                    <span>${temoignage.note}</span>
+                </div>
+            `;
+        });
+        
+        temoignagesSlider.innerHTML = htmlContent;
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des témoignages :", error);
+        temoignagesSlider.innerHTML = '<p class="error-msg">Impossible de charger les témoignages.</p>';
+    }
+};
+
+// --- Appel de la fonction au chargement ---
+// Nous devons aussi ajouter cet appel à la fonction d'initialisation dans script.js
+// Mais en attendant, pour le tester:
+window.loadTestimonials();
+
 

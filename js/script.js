@@ -135,7 +135,10 @@ function generateTemoignagesHTML() {
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialise les événements de filtre (loadProjects dans firebase-app.js prendra le relais)
     window.setupPortfolioFilter();
-    
-    // 2. Génère le HTML des témoignages
-    generateTemoignagesHTML();
+
+    // 2. Génère le HTML des témoignages DYNAMIQUES
+    // Assurez-vous que cette fonction est appelée APRES l'importation de firebase-app.js
+    if (window.loadTestimonials) {
+        window.loadTestimonials();
+    }
 });
