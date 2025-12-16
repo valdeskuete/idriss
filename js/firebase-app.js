@@ -8,13 +8,12 @@ import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, d
 
 // !!! VEUILLEZ REMPLACER CES VALEURS PAR VOS PROPRES CLÉS DE CONFIGURATION FIREBASE !!!
 const firebaseConfig = {
-    const firebaseConfig = {
     apiKey: "AIzaSyDF7XWK56sp4x5ASvi0ipzkTrcp4bZEfwo",
     authDomain: "youssouf-paris-meuble.firebaseapp.com",
     projectId: "youssouf-paris-meuble",
     storageBucket: "youssouf-paris-meuble.firebasestorage.app",
     messagingSenderId: "149032130636",
-    appId: "1:149032130636:web:6f86b64064447fd63ebce9"
+    
 };
 
 // Initialisation des services
