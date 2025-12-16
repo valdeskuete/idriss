@@ -2,8 +2,6 @@
 /* === SCRIPT.JS : LOGIQUE D'INTERACTIVITÉ ET FILTRES (UI) === */
 /* ==================================================================== */
 
-// Le code est commenté pour faciliter les mises à jour et la compréhension.
-
 /* -------------------- MENU MOBILE & NAVIGATION -------------------- */
 let menuIcon = document.querySelector('#menu-icon');
 let navbar = document.querySelector('.navbar');
@@ -68,6 +66,7 @@ window.setupPortfolioFilter = function() {
     // On parcourt les boutons de filtre
     filterButtons.forEach(button => {
         // Supprime l'ancien écouteur avant d'en ajouter un nouveau (sécurité après rechargement)
+        // Ceci évite d'avoir plusieurs gestionnaires d'événements attachés au même bouton.
         const newButton = button.cloneNode(true);
         button.parentNode.replaceChild(newButton, button);
         
@@ -82,7 +81,7 @@ window.setupPortfolioFilter = function() {
             if (window.loadProjects) {
                 window.loadProjects(filterValue);
             } else {
-                console.error("Erreur: La fonction loadProjects (Firebase) n'est pas définie.");
+                console.error("Erreur: La fonction loadProjects (Firebase) n'est pas définie. Vérifiez l'ordre de chargement des scripts.");
             }
         });
     });
@@ -95,14 +94,11 @@ window.setupPortfolioFilter = function() {
 
 // Exécute les fonctions d'interface une fois que le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialise les événements de filtre (loadProjects dans firebase-app.js prendra le relais)
+    // 1. Initialise les événements de filtre
     if (window.setupPortfolioFilter) {
         window.setupPortfolioFilter();
     }
-
-    // 2. Déclenche le chargement des témoignages DYNAMIQUES
-    // loadTestimonials doit être appelée APRES l'importation de firebase-app.js
-    if (window.loadTestimonials) {
-        window.loadTestimonials();
-    }
+    
+    // Remarque: Le chargement initial des projets et témoignages est géré à la fin
+    // de `firebase-app.js` pour s'assurer que Firebase est initialisé.
 });
