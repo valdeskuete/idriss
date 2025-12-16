@@ -87,7 +87,7 @@ const adminPanel = document.getElementById('admin-panel');
 const logoutBtn = document.getElementById('logout-btn');
 
 
-// Afficher le modal de connexion (Fonction qui était bloquée)
+// Afficher le modal de connexion
 if (adminTrigger && loginModal) {
     adminTrigger.addEventListener('click', () => {
         loginModal.classList.remove('hidden');
@@ -105,17 +105,22 @@ if (closeModal && loginModal) {
 if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        // Assurez-vous que ces IDs correspondent à index.html
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
 
         try {
+            // C'EST LA LIGNE CRITIQUE : Vérifiez les imports en haut du fichier !
             await signInWithEmailAndPassword(auth, email, password);
+            
             loginModal.classList.add('hidden');
             loginForm.reset();
             // onAuthStateChanged gérera l'affichage du panneau
         } catch (error) {
             alert("Erreur de connexion: Email ou mot de passe incorrect.");
-            console.error(error);
+            // Le message d'erreur réel s'affiche ici. 
+            console.error("Erreur Firebase Auth :", error); 
         }
     });
 }
