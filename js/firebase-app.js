@@ -368,8 +368,11 @@ window.loadTestimonials = async () => {
         }
     }
 };
-
+// Charge les témoignages initiaux
 window.loadTestimonials();
+
+// Charge les messages initiaux pour le conteneur admin (sera écrasé à la connexion)
+window.loadMessages(); // <--- AJOUT CRITIQUE ICI
 
 
 /* ==================================================================== */
