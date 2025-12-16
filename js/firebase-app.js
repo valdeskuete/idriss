@@ -1,300 +1,349 @@
-/* ==========================================================
-    FIREBASE APP - GESTION DYNAMIQUE (AUTH, DATABASE & STORAGE)
-    ========================================================== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, doc, updateDoc, where } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
 
-// 1. IMPORT DES FONCTIONS FIREBASE (SDK MODULAIRE)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-// IMPORTANT: deleteDoc est déjà importé, c'est parfait.
-import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// NOTE: L'IMPORT DU STORAGE EST RETIRÉ CAR IL N'EST PLUS UTILISÉ.
-// import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+/* ==================================================================== */
+/* ======================== 1. CONFIGURATION FIREBASE ======================== */
+/* ==================================================================== */
 
-// 2. CONFIGURATION FIREBASE (REMPLACE PAR TES CLÉS !)
+// Remplacez ces valeurs par vos propres clés de configuration Firebase
 const firebaseConfig = {
-    // Insère ici ton apiKey: "AIzaSyDF7XWK56sp4x5ASvi0ipzkTrcp4bZEfwo",
-    apiKey: "AIzaSyDF7XWK56sp4x5ASvi0ipzkTrcp4bZEfwo", // Remplacer par ta clé réelle
-    authDomain: "youssouf-paris-meuble.firebaseapp.com",
-    projectId: "youssouf-paris-meuble",
-    storageBucket: "youssouf-paris-meuble.firebasestorage.app",
-    messagingSenderId: "149032130636",
-    appId: "1:149032130636:web:6f86b64064447fd63ebce9"
+    // Insérez vos clés de configuration ici (apiKey, authDomain, projectId, etc.)
+    // ...
 };
 
-// 3. INITIALISATION
+// Initialisation des services
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-// NOTE: L'INITIALISATION DU STORAGE EST RETIRÉE CAR IL N'EST PLUS UTILISÉ.
-// const storage = getStorage(app); 
 
-// DOM ELEMENTS
-const loginModal = document.getElementById('login-modal');
-const adminPanel = document.getElementById('admin-panel');
-const adminTrigger = document.getElementById('admin-trigger');
-const loginForm = document.getElementById('login-form');
-const logoutBtn = document.getElementById('logout-btn');
-const projectForm = document.getElementById('add-project-form');
-const portfolioList = document.getElementById('portfolio-list');
-// const uploadProgress = document.getElementById('upload-progress'); // Non utilisé sans Storage
+// Variables globales pour l'état d'authentification
+let isAdmin = false;
 
-let isAdmin = false; // Flag pour l'affichage conditionnel
+/* ==================================================================== */
+/* ================== 2. FONCTIONS GÉNÉRIQUES (CRUD) ================== */
+/* ==================================================================== */
 
-/* ==================== 1. GESTION DE L'AUTHENTIFICATION ==================== */
-
-// Vérifier si l'utilisateur est connecté (Admin)
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        isAdmin = true;
-        adminPanel.classList.remove('hidden');
-        loginModal.classList.add('hidden');
-        adminTrigger.style.display = 'none'; 
-    } else {
-        isAdmin = false;
-        adminPanel.classList.add('hidden');
-        adminTrigger.style.display = 'block';
+/**
+ * Fonction générique pour supprimer un document (projet ou témoignage).
+ * @param {string} collectionName - Nom de la collection (ex: 'projets', 'temoignages').
+ * @param {string} id - ID du document à supprimer.
+ */
+window.deleteItem = async (collectionName, id) => {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer cet élément (${collectionName}) ? Cette action est irréversible.`)) {
+        return;
     }
-    // Recharger les projets pour appliquer l'affichage Admin/Suppression
-    loadProjects(); 
-});
 
-// Ouvrir le modal login
-if (adminTrigger) {
+    try {
+        await deleteDoc(doc(db, collectionName, id));
+        alert('Suppression réussie !');
+        
+        // Rafraîchir l'affichage
+        if (collectionName === 'projets') {
+            // Recharger les projets pour le filtre actif
+            const activeFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+            window.loadProjects(activeFilter); 
+        } else if (collectionName === 'temoignages') {
+            window.loadTestimonials();
+        }
+
+    } catch (error) {
+        console.error("Erreur lors de la suppression:", error);
+        alert('Erreur lors de la suppression: ' + error.message);
+    }
+}
+
+/**
+ * NOUVEAU : Met à jour le statut (approuvé/non approuvé) d'un témoignage.
+ */
+window.updateStatus = async (id, status) => {
+    try {
+        await updateDoc(doc(db, "temoignages", id), {
+            approved: status
+        });
+        alert(status ? 'Témoignage approuvé et publié !' : 'Témoignage mis en attente !');
+        window.loadTestimonials(); // Rechargement
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour du statut:", error);
+        alert('Erreur lors de la mise à jour: ' + error.message);
+    }
+}
+
+
+/* ==================================================================== */
+/* ============= 3. GESTION DE L'AUTHENTIFICATION (ADMIN) ============= */
+/* ==================================================================== */
+
+const adminTrigger = document.getElementById('admin-trigger');
+const loginModal = document.getElementById('login-modal');
+const loginForm = document.getElementById('login-form');
+const closeModal = document.querySelector('.close-modal');
+const adminPanel = document.getElementById('admin-panel');
+const logoutBtn = document.getElementById('logout-btn');
+
+
+// Afficher le modal de connexion
+if (adminTrigger && loginModal) {
     adminTrigger.addEventListener('click', () => {
         loginModal.classList.remove('hidden');
     });
 }
 
-// Fermer le modal (croix)
-const closeModalBtn = document.querySelector('.close-modal');
-if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', () => {
+// Fermer le modal
+if (closeModal && loginModal) {
+    closeModal.addEventListener('click', () => {
         loginModal.classList.add('hidden');
     });
 }
 
-
-// Connexion (Login)
+// Soumission du formulaire de connexion
 if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
 
-        signInWithEmailAndPassword(auth, email, password)
-            .then(() => {
-                loginForm.reset();
-                alert("Bienvenue Maître Artisan !");
-            })
-            .catch((error) => {
-                alert("Erreur de connexion : Vérifiez l'email et le mot de passe.");
-            });
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            loginModal.classList.add('hidden');
+            loginForm.reset();
+            // onAuthStateChanged gérera l'affichage du panneau
+        } catch (error) {
+            alert("Erreur de connexion: Email ou mot de passe incorrect.");
+            console.error(error);
+        }
     });
 }
-
 
 // Déconnexion
 if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        signOut(auth).then(() => {
-            alert("Déconnecté avec succès.");
-            window.location.reload();
-        });
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            // onAuthStateChanged gérera la masquage du panneau
+        } catch (error) {
+            console.error("Erreur de déconnexion:", error);
+        }
     });
 }
 
-
-/* ==================== 2. LECTURE & SUPPRESSION DES PROJETS (GALERIE) ==================== */
-
-// Fonction pour générer le HTML d'un projet
-function createProjectHTML(projet, projectId) {
-    let adminControls = '';
-    // Ajout du bouton de suppression si l'utilisateur est Admin
-    if (isAdmin) {
-        adminControls = `
-            <div class="admin-controls">
-                <button onclick="window.deleteItem('projets', '${projectId}')" class="delete-btn" title="Supprimer le projet">
-                    <i class='bx bx-trash'></i> Supprimer
-                </button>
-            </div>
-        `;
+// Vérification de l'état d'authentification en temps réel
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // Utilisateur connecté
+        isAdmin = true;
+        adminPanel?.classList.remove('hidden');
+        adminTrigger?.classList.add('hidden');
+        window.loadProjects('all'); // Recharger les projets pour afficher les boutons admin
+        window.loadTestimonials(); // Recharger les témoignages pour l'admin
+    } else {
+        // Utilisateur déconnecté
+        isAdmin = false;
+        adminPanel?.classList.add('hidden');
+        adminTrigger?.classList.remove('hidden');
+        window.loadProjects('all'); // Recharger les projets sans les boutons admin
     }
-
-    return `
-        <div class="portfolio-box" data-category="${projet.categorie}">
-            <img src="${projet.imageUrl}" alt="${projet.titre}">
-            <div class="portfolio-layer">
-                <h4>${projet.titre}</h4>
-                <p>${projet.description}</p>
-                <a href="${projet.imageUrl}" target="_blank" title="Voir l'image en grand"><i class='bx bx-search-alt-2'></i></a>
-            </div>
-            ${adminControls}
-        </div>
-    `;
-}
-
-// Fonction pour charger et afficher tous les projets
-window.loadProjects = async function(filterCategory = 'all') {
-    if (!portfolioList) return; 
-
-    portfolioList.innerHTML = '<p style="color:white; text-align:center;">Chargement des réalisations en cours...</p>';
-    
-    const q = query(collection(db, "projets"), orderBy("date", "desc"));
-    
-    try {
-        const querySnapshot = await getDocs(q);
-        let htmlContent = '';
-        let projectsCount = 0;
-
-        querySnapshot.forEach((doc) => {
-            const projet = doc.data();
-            const projectId = doc.id; // Récupère l'ID pour la suppression
-            
-            if (filterCategory === 'all' || projet.categorie === filterCategory) {
-                 htmlContent += createProjectHTML(projet, projectId);
-                 projectsCount++;
-            }
-        });
-
-        if(projectsCount === 0 && filterCategory === 'all') {
-            portfolioList.innerHTML = '<p style="color:white; text-align:center;">Aucun projet n\'a encore été publié par l\'administrateur.</p>';
-        } else if (projectsCount === 0 && filterCategory !== 'all') {
-            portfolioList.innerHTML = `<p style="color:white; text-align:center;">Aucun projet dans la catégorie "${filterCategory}".</p>`;
-        } else {
-            portfolioList.innerHTML = htmlContent;
-        }
-
-        if(window.setupPortfolioFilter) window.setupPortfolioFilter(); 
-
-    } catch (error) {
-        console.error("Erreur chargement des projets:", error);
-        portfolioList.innerHTML = '<p style="color:white; text-align:center;">Erreur de connexion à la base de données.</p>';
-    }
-}
-
-// Lancement au démarrage
-loadProjects();
+});
 
 
-/* ==================== FONCTION DE SUPPRESSION GÉNÉRIQUE ==================== */
+/* ==================================================================== */
+/* ============= 4. GESTION DES PROJETS (CRUD + FILTRAGE) ============= */
+/* ==================================================================== */
 
-/**
- * Supprime un document dans une collection spécifiée.
- * @param {string} collectionName - Le nom de la collection (ex: 'projets').
- * @param {string} docId - L'ID du document à supprimer.
- */
-window.deleteItem = async (collectionName, docId) => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cet élément ?")) return;
+const addProjectForm = document.getElementById('add-project-form');
+const portfolioList = document.getElementById('portfolio-list');
 
-    try {
-        await deleteDoc(doc(db, collectionName, docId));
-        alert("✅ Élément supprimé avec succès !");
-        
-        // Rafraîchir l'affichage après la suppression
-        if (collectionName === 'projets') {
-            window.loadProjects();
-        } 
-        if (collectionName === 'temoignages') {
-            window.loadTestimonials(); 
-        }
-
-    } catch (error) {
-        console.error(`Erreur lors de la suppression de l'élément dans ${collectionName}:`, error);
-        alert("Erreur lors de la suppression : Vérifiez les permissions Firestore ou la connexion. " + error.message);
-    }
-};
-
-
-/* ==================== 3. AJOUT DE PROJET (SANS UPLOAD) ==================== */
-
-if (projectForm) {
-    projectForm.addEventListener('submit', async (e) => {
+// Soumission du formulaire d'ajout de projet
+if (addProjectForm) {
+    addProjectForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const title = document.getElementById('proj-title').value;
         const category = document.getElementById('proj-category').value;
-        const desc = document.getElementById('proj-desc').value;
-        // Nouvelle variable pour récupérer l'URL au lieu du fichier
-        const imageUrl = document.getElementById('proj-image-url').value; 
-
-        if (!imageUrl || !imageUrl.startsWith('http')) return alert("Veuillez coller une URL d'image valide.");
-
-        const submitBtn = projectForm.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Publication en cours...";
+        const description = document.getElementById('proj-desc').value;
+        const imageUrl = document.getElementById('proj-image-url').value;
 
         try {
-            // A. SAUVEGARDE DES DONNÉES DANS FIRESTORE
             await addDoc(collection(db, "projets"), {
-                titre: title,
-                categorie: category,
-                description: desc,
-                // Utilisation directe de l'URL fournie
-                imageUrl: imageUrl, 
-                date: new Date()
+                title: title,
+                category: category,
+                description: description,
+                imageUrl: imageUrl,
+                timestamp: new Date()
             });
 
-            alert("✅ Projet ajouté avec succès !");
-            projectForm.reset();
-            submitBtn.textContent = "Publier le projet";
-            submitBtn.disabled = false;
-
-            // Recharger la galerie pour voir le nouveau projet
-            loadProjects();
-
+            alert('Projet publié avec succès !');
+            addProjectForm.reset();
+            window.loadProjects('all'); // Recharger la liste
         } catch (error) {
-            console.error("Erreur critique lors de l'ajout:", error);
-            alert("Erreur lors de l'ajout : " + error.message);
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Publier le projet";
+            console.error("Erreur lors de l'ajout du projet:", error);
+            alert("Erreur lors de l'ajout du projet: " + error.message);
         }
     });
 }
 
+/**
+ * Charge les projets depuis la base de données avec un filtre.
+ * @param {string} filter - La catégorie à filtrer ('all', 'ameublement', etc.)
+ */
+window.loadProjects = async (filter) => {
+    if (!portfolioList) return;
+
+    let q = query(collection(db, "projets"), orderBy("timestamp", "desc"));
+    if (filter !== 'all') {
+        q = query(collection(db, "projets"), where("category", "==", filter), orderBy("timestamp", "desc"));
+    }
+
+    try {
+        const querySnapshot = await getDocs(q);
+        let htmlContent = '';
+        
+        querySnapshot.forEach((doc) => {
+            const project = doc.data();
+            const projectId = doc.id;
+            
+            // Logique pour le bouton de suppression (uniquement si l'administrateur est connecté)
+            const adminButton = isAdmin ? 
+                `<div class="admin-controls">
+                    <button onclick="window.deleteItem('projets', '${projectId}')" class="delete-btn">
+                        <i class='bx bx-trash'></i> Supprimer
+                    </button>
+                </div>` : '';
+            
+            htmlContent += `
+                <div class="portfolio-box" data-category="${project.category}">
+                    <img src="${project.imageUrl}" alt="${project.title}">
+                    <div class="portfolio-layer">
+                        <h4>${project.title}</h4>
+                        <p>${project.description}</p>
+                    </div>
+                    ${adminButton}
+                </div>
+            `;
+        });
+
+        portfolioList.innerHTML = htmlContent;
+        // La fonction UI (script.js) est appelée ici pour réinitialiser les événements
+        if (window.setupPortfolioFilter) {
+            window.setupPortfolioFilter();
+        }
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des projets :", error);
+        portfolioList.innerHTML = '<p class="error-msg">Impossible de charger les projets.</p>';
+    }
+};
+
+// Charge les projets initiaux
+window.loadProjects('all');
+
 
 /* ==================================================================== */
-/* ============= 4. GESTION DU FORMULAIRE DE CONTACT (MESSAGES) ============= */
+/* ============= 5. GESTION DES TÉMOIGNAGES (MODÉRATION + PUBLIC) ============= */
 /* ==================================================================== */
 
-// Référence au formulaire de contact
-const contactForm = document.querySelector('#contact-form');
+/**
+ * Génère le HTML des témoignages pour le public et l'admin.
+ */
+window.loadTestimonials = async () => {
+    const temoignagesSlider = document.querySelector('#temoignages-slider');
+    const adminTemoignagesList = document.querySelector('#admin-temoignages-list'); 
 
-if (contactForm) {
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // Requête pour l'affichage public : seulement les approuvés
+    const publicQ = query(collection(db, "temoignages"), where("approved", "==", true), orderBy("date", "desc"));
+    
+    // Requête pour l'administration : tous, approuvés et en attente
+    const adminQ = query(collection(db, "temoignages"), orderBy("date", "desc"));
 
-        const name = document.getElementById('contact-name').value;
-        const email = document.getElementById('contact-email').value;
-        const subject = document.getElementById('contact-subject').value;
-        const message = document.getElementById('contact-message').value;
+    try {
+        // --- PUBLIC : Affichage des témoignages approuvés ---
+        const publicSnapshot = await getDocs(publicQ);
+        let publicHtmlContent = '';
+        let publicCount = 0;
+        
+        publicSnapshot.forEach((doc) => {
+            const temoignage = doc.data();
+            publicCount++;
+            
+            publicHtmlContent += `
+                <div class="temoignages-item">
+                    <i class='bx bxs-quote-alt-left'></i>
+                    <p>${temoignage.citation}</p>
+                    <h3>${temoignage.auteur}</h3>
+                    <span>${temoignage.note}</span>
+                </div>
+            `;
+        });
+        
+        if (temoignagesSlider) {
+            if (publicCount === 0) {
+                temoignagesSlider.innerHTML = '<p class="info-msg">Soyez le premier à laisser votre témoignage !</p>';
+            } else {
+                temoignagesSlider.innerHTML = publicHtmlContent;
+            }
+        }
+        
+        // --- ADMIN : Affichage de tous les témoignages pour modération ---
+        if (adminTemoignagesList && isAdmin) {
+            const adminSnapshot = await getDocs(adminQ);
+            let adminHtmlContent = '';
+            let adminCount = 0;
+            
+            adminSnapshot.forEach((doc) => {
+                const temoignage = doc.data();
+                const temoignageId = doc.id; 
+                adminCount++;
+                const isApproved = temoignage.approved === true;
 
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Envoi en cours...";
+                // 1. Bouton(s) d'action
+                let actionButtons = `<button onclick="window.deleteItem('temoignages', '${temoignageId}')" class="delete-btn"><i class='bx bx-trash'></i> Supprimer</button>`;
+                
+                let statusLabel = isApproved ? 
+                    '<span style="color: green; font-weight: bold;">Approuvé (Public)</span>' : 
+                    '<span style="color: red; font-weight: bold;">En Attente (Privé)</span>';
+                
+                if (!isApproved) {
+                    // Ajoute un bouton Approuver pour les éléments en attente
+                    actionButtons = `
+                        <button onclick="window.updateStatus('${temoignageId}', true)" class="btn" style="background: var(--clr-gold); margin-right: 10px; padding: 8px 15px; font-size: 0.9rem;">
+                            <i class='bx bx-check'></i> Approuver
+                        </button>
+                        ${actionButtons}
+                    `;
+                }
 
-        try {
-            // Sauvegarde le message dans la collection 'messages'
-            await addDoc(collection(db, "messages"), {
-                nom: name,
-                email: email,
-                sujet: subject,
-                message: message,
-                date: new Date(),
-                traite: false 
+
+                // 2. Construction de la boîte admin
+                adminHtmlContent += `
+                    <div class="admin-temoignage-box">
+                        <p><strong>Statut :</strong> ${statusLabel}</p>
+                        <p><strong>De:</strong> ${temoignage.auteur} (${temoignage.note})</p>
+                        <p class="citation-text">"${temoignage.citation}"</p>
+                        <p class="date-text">Soumis le: ${temoignage.date.toDate().toLocaleDateString()}</p>
+                        
+                        <div style="text-align: right; margin-top: 10px;">${actionButtons}</div>
+                    </div>
+                `;
             });
 
-            alert("✅ Votre message a été envoyé avec succès ! Consultez la base de données.");
-            contactForm.reset();
-
-        } catch (error) {
-            console.error("Erreur lors de l'envoi du message :", error);
-            alert("Erreur lors de l'envoi du message : " + error.message);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Envoyer le message";
+            if (adminCount === 0) {
+                adminTemoignagesList.innerHTML = '<p class="info-msg">Aucun témoignage à modérer.</p>';
+            } else {
+                adminTemoignagesList.innerHTML = adminHtmlContent;
+            }
         }
-    });
-}
+
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des témoignages :", error);
+        if (temoignagesSlider) {
+            temoignagesSlider.innerHTML = '<p class="error-msg">Impossible de charger les témoignages.</p>';
+        }
+    }
+};
+
+window.loadTestimonials();
+
 
 /* ==================================================================== */
 /* ============= 6. SOUMISSION DES TÉMOIGNAGES PAR LE CLIENT ============= */
@@ -317,21 +366,17 @@ if (temoignageForm) {
         messageDiv.textContent = "";
 
         try {
-            // Sauvegarde le témoignage dans la collection 'temoignages'
             await addDoc(collection(db, "temoignages"), {
                 auteur: auteur,
                 note: note,
                 citation: citation,
                 date: new Date(),
-                // Vous pouvez ajouter ici un champ 'approuve: false' si vous voulez modérer les avis
+                approved: false // <--- MODÉRATION ACTIVÉE: Le témoignage est en attente par défaut
             });
 
-            messageDiv.textContent = "✅ Merci ! Votre témoignage a été soumis et sera visible après le rechargement de la page.";
+            messageDiv.textContent = "✅ Merci ! Votre témoignage a été soumis à l'administrateur pour validation.";
             temoignageForm.reset();
             
-            // Rafraîchir l'affichage (optionnel, mais sympa)
-            window.loadTestimonials();
-
         } catch (error) {
             console.error("Erreur lors de la soumission du témoignage :", error);
             messageDiv.textContent = "❌ Erreur lors de la soumission : " + error.message;
@@ -341,81 +386,46 @@ if (temoignageForm) {
         }
     });
 }
+
+
 /* ==================================================================== */
-/* ============= 5. GESTION DES TÉMOIGNAGES (AFFICHAGE) ============= */
+/* ============ 7. GESTION DU FORMULAIRE DE CONTACT (MESSAGES) ============= */
 /* ==================================================================== */
 
-/**
- * Génère le HTML des témoignages à partir de la base de données.
- * Affiche la liste complète dans l'Admin Panel s'il est actif.
- */
-window.loadTestimonials = async () => {
-    const temoignagesSlider = document.querySelector('#temoignages-slider');
-    const adminTemoignagesList = document.querySelector('#admin-temoignages-list'); // NOUVEL ÉLÉMENT
+const contactForm = document.getElementById('contact-form');
 
-    const q = query(collection(db, "temoignages"), orderBy("date", "desc"));
-    
-    try {
-        const querySnapshot = await getDocs(q);
-        let publicHtmlContent = '';
-        let adminHtmlContent = '';
-        let count = 0;
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('contact-name').value;
+        const email = document.getElementById('contact-email').value;
+        const phone = document.getElementById('contact-phone').value;
+        const subject = document.getElementById('contact-subject').value;
+        const message = document.getElementById('contact-message').value;
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Envoi...";
         
-        querySnapshot.forEach((doc) => {
-            const temoignage = doc.data();
-            const temoignageId = doc.id; 
-            count++;
-            
-            // --- 1. Contenu pour le slider public (design simple) ---
-            publicHtmlContent += `
-                <div class="temoignages-item">
-                    <i class='bx bxs-quote-alt-left'></i>
-                    <p>${temoignage.citation}</p>
-                    <h3>${temoignage.auteur}</h3>
-                    <span>${temoignage.note}</span>
-                </div>
-            `;
-            
-            // --- 2. Contenu pour l'interface Admin (avec bouton de suppression) ---
-            adminHtmlContent += `
-                <div class="admin-temoignage-box">
-                    <p><strong>De:</strong> ${temoignage.auteur} (${temoignage.note})</p>
-                    <p class="citation-text">"${temoignage.citation}"</p>
-                    <p class="date-text">Soumis le: ${temoignage.date.toDate().toLocaleDateString()}</p>
-                    
-                    <button onclick="window.deleteItem('temoignages', '${temoignageId}')" class="delete-btn">
-                        <i class='bx bx-trash'></i> Supprimer
-                    </button>
-                </div>
-            `;
-        });
-        
-        // Mise à jour de l'affichage Public
-        if (temoignagesSlider) {
-            if (count === 0) {
-                temoignagesSlider.innerHTML = '<p class="info-msg">Aucun témoignage n\'a encore été publié.</p>';
-            } else {
-                temoignagesSlider.innerHTML = publicHtmlContent;
-            }
-        }
-        
-        // Mise à jour de l'affichage Admin (si l'élément existe)
-        if (adminTemoignagesList) {
-            if (count === 0) {
-                adminTemoignagesList.innerHTML = '<p class="info-msg">Aucun témoignage à modérer.</p>';
-            } else {
-                adminTemoignagesList.innerHTML = adminHtmlContent;
-            }
-        }
+        try {
+            await addDoc(collection(db, "messages"), {
+                name: name,
+                email: email,
+                phone: phone,
+                subject: subject,
+                message: message,
+                date: new Date()
+            });
 
-
-    } catch (error) {
-        console.error("Erreur lors du chargement des témoignages :", error);
-        if (temoignagesSlider) {
-            temoignagesSlider.innerHTML = '<p class="error-msg">Impossible de charger les témoignages.</p>';
+            alert('Votre message a été envoyé avec succès. Nous vous recontacterons bientôt !');
+            contactForm.reset();
+        } catch (error) {
+            console.error("Erreur lors de l'envoi du message:", error);
+            alert("Erreur lors de l'envoi du message: " + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Envoyer le Message";
         }
-    }
-};
-
-// --- Appel de la fonction au chargement ---
-window.loadTestimonials();
+    });
+}
