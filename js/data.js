@@ -17,7 +17,7 @@ const projetsData = [
     {
         titre: "Lit King Size Design Moderne",
         description: "Création d'un lit King Size en bois de Noyer avec tête de lit capitonnée sur mesure.",
-        image: "images/projets/lit-modern.jpg", // Nom de l'image (à placer dans le dossier images/projets/)
+        image: "images/projets/images 10.jpg", // Nom de l'image (à placer dans le dossier images/projets/)
         categorie: "ameublement"
     },
     
