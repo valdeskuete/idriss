@@ -33,7 +33,7 @@ const projetsData = [
     {
         titre: "Réfection d'un Canapé d'Angle",
         description: "Remise à neuf d'un canapé ancien : structure, mousse et tapisserie neuves pour un look moderne.",
-        image: "images/projets/canape-refait.jpg",
+        image: "images/projets/image 5.jpg",
         categorie: "renovation"
     },
 
