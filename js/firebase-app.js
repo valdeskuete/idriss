@@ -6,10 +6,14 @@ import { getFirestore, collection, addDoc, getDocs, query, orderBy, deleteDoc, d
 /* ======================== 1. CONFIGURATION FIREBASE ======================== */
 /* ==================================================================== */
 
-// Remplacez ces valeurs par vos propres clés de configuration Firebase
+// !!! VEUILLEZ REMPLACER CES VALEURS PAR VOS PROPRES CLÉS DE CONFIGURATION FIREBASE !!!
 const firebaseConfig = {
-    // Insérez vos clés de configuration ici (apiKey, authDomain, projectId, etc.)
-    // ...
+    apiKey: "VOTRE_CLÉ_API_ICI", 
+    authDomain: "VOTRE_DOMAINE_AUTH_ICI",
+    projectId: "VOTRE_PROJECT_ID_ICI", 
+    storageBucket: "VOTRE_STORAGE_BUCKET_ICI",
+    messagingSenderId: "VOTRE_MESSAGING_SENDER_ID_ICI",
+    appId: "VOTRE_APP_ID_ICI"
 };
 
 // Initialisation des services
@@ -54,7 +58,7 @@ window.deleteItem = async (collectionName, id) => {
 }
 
 /**
- * NOUVEAU : Met à jour le statut (approuvé/non approuvé) d'un témoignage.
+ * Met à jour le statut (approuvé/non approuvé) d'un témoignage.
  */
 window.updateStatus = async (id, status) => {
     try {
@@ -74,6 +78,7 @@ window.updateStatus = async (id, status) => {
 /* ============= 3. GESTION DE L'AUTHENTIFICATION (ADMIN) ============= */
 /* ==================================================================== */
 
+// Récupération des éléments DOM
 const adminTrigger = document.getElementById('admin-trigger');
 const loginModal = document.getElementById('login-modal');
 const loginForm = document.getElementById('login-form');
@@ -82,7 +87,7 @@ const adminPanel = document.getElementById('admin-panel');
 const logoutBtn = document.getElementById('logout-btn');
 
 
-// Afficher le modal de connexion
+// Afficher le modal de connexion (Fonction qui était bloquée)
 if (adminTrigger && loginModal) {
     adminTrigger.addEventListener('click', () => {
         loginModal.classList.remove('hidden');
@@ -95,8 +100,6 @@ if (closeModal && loginModal) {
         loginModal.classList.add('hidden');
     });
 }
-
-// ... Le reste de la logique de connexion (soumission, déconnexion, onAuthStateChanged) ...
 
 // Soumission du formulaire de connexion
 if (loginForm) {
@@ -314,7 +317,6 @@ window.loadTestimonials = async () => {
                     `;
                 }
 
-
                 // 2. Construction de la boîte admin
                 adminHtmlContent += `
                     <div class="admin-temoignage-box">
@@ -373,7 +375,7 @@ if (temoignageForm) {
                 note: note,
                 citation: citation,
                 date: new Date(),
-                approved: false // <--- MODÉRATION ACTIVÉE: Le témoignage est en attente par défaut
+                approved: false // <--- MODÉRATION ACTIVÉE
             });
 
             messageDiv.textContent = "✅ Merci ! Votre témoignage a été soumis à l'administrateur pour validation.";
