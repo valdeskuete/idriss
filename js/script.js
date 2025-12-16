@@ -1,8 +1,8 @@
 /* ==================================================================== */
-/* === SCRIPT.JS : LOGIQUE D'INTERACTIVITÉ ET CONTENU DYNAMIQUE === */
+/* === SCRIPT.JS : LOGIQUE D'INTERACTIVITÉ ET FILTRES (UI) === */
 /* ==================================================================== */
 
-// Le code sera commenté pour faciliter les mises à jour et la compréhension.
+// Le code est commenté pour faciliter les mises à jour et la compréhension.
 
 /* -------------------- MENU MOBILE & NAVIGATION -------------------- */
 let menuIcon = document.querySelector('#menu-icon');
@@ -21,7 +21,6 @@ let navLinks = document.querySelectorAll('header nav a');
 window.onscroll = () => {
     sections.forEach(sec => {
         let top = window.scrollY;
-        // Décalage ajusté pour une meilleure navigation
         let offset = sec.offsetTop - 150; 
         let height = sec.offsetHeight;
         let id = sec.getAttribute('id');
@@ -38,57 +37,32 @@ window.onscroll = () => {
         };
     });
 
-    // --- Sticky Navbar (Ajoute la classe 'sticky' au header après 100px de scroll)
+    // --- Sticky Navbar 
     let header = document.querySelector('header');
     header.classList.toggle('sticky', window.scrollY > 100);
 
-    // --- Fermer le menu mobile au scroll (pour éviter qu'il reste ouvert sur mobile)
+    // --- Fermer le menu mobile au scroll
     menuIcon.classList.remove('bx-x');
     navbar.classList.remove('active');
 };
 
 
 /* ==================================================================== */
-/* === GESTION DU CONTENU DYNAMIQUE (PROJETS & TÉMOIGNAGES) === */
+/* === GESTION DES FILTRES DE PROJETS (INTERFACE SEULEMENT) === */
 /* ==================================================================== */
 
-// Le contenu des tableaux `projetsData` et `temoignagesData` est dans data.js
-
-/* -------------------- 1. GALERIE PROJETS FILTRABLE -------------------- */
-
-// Référence au conteneur où les projets seront affichés
-const portfolioContainer = document.querySelector('#portfolio-list');
-
-function generatePortfolioHTML() {
-    let htmlContent = '';
-    
-    // Pour chaque objet dans le tableau `projetsData` (dans data.js)
-    projetsData.forEach(projet => {
-        // Crée le code HTML pour un seul projet
-        htmlContent += `
-            <div class="portfolio-box" data-category="${projet.categorie}">
-                <img src="${projet.image}" alt="Image de ${projet.titre}">
-                <div class="portfolio-layer">
-                    <h4>${projet.titre}</h4>
-                    <p>${projet.description}</p>
-                    <a href="${projet.image}" target="_blank" title="Agrandir l'image">
-                        <i class='bx bx-search-alt-2'></i>
-                    </a>
-                </div>
-            </div>
-        `;
-    });
-    
-    // Injecte tout le code HTML dans le conteneur principal
-    portfolioContainer.innerHTML = htmlContent;
-}
-
-function setupPortfolioFilter() {
+/**
+ * Attache les écouteurs d'événements aux boutons de filtre.
+ * Cette fonction est appelée par `firebase-app.js` après chaque chargement/mise à jour.
+ */
+window.setupPortfolioFilter = function() {
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const portfolioBoxes = document.querySelectorAll('.portfolio-box');
 
-    // Événement de clic sur chaque bouton de filtre
+    // On parcourt les boutons de filtre
     filterButtons.forEach(button => {
+        // Pour éviter les bugs de double clic après le rechargement, on supprime/ré-ajoute
+        button.onclick = null; 
+        
         button.addEventListener('click', (e) => {
             const filterValue = e.target.getAttribute('data-filter');
 
@@ -96,43 +70,51 @@ function setupPortfolioFilter() {
             filterButtons.forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
 
-            // 2. Filtrage des projets
-            portfolioBoxes.forEach(box => {
-                const boxCategory = box.getAttribute('data-category');
-
-                if (filterValue === 'all' || boxCategory === filterValue) {
-                    // Si le projet correspond au filtre ou si c'est 'all', on l'affiche
-                    box.classList.remove('hidden');
-                    // On remet la hauteur pour l'animation
-                    box.style.height = 'auto'; 
-                    box.style.padding = '2.5rem 0'; // Remettre le padding par défaut
-                    box.style.margin = '0';
-                } else {
-                    // Sinon, on le cache
-                    box.classList.add('hidden');
-                    // Retirer la hauteur après l'animation pour un filtre propre
-                    setTimeout(() => {
-                        box.style.height = '0';
-                        box.style.padding = '0';
-                        box.style.margin = '0';
-                    }, 500); 
-                }
-            });
+            // 2. Déclenche le rechargement des projets via la fonction de Firebase
+            // Cette fonction existe dans firebase-app.js
+            if (window.loadProjects) {
+                window.loadProjects(filterValue);
+            } else {
+                console.error("Erreur: La fonction loadProjects (Firebase) n'est pas définie.");
+            }
         });
     });
-}
+};
 
-/* -------------------- 2. TÉMOIGNAGES (GRILLE SIMPLE) -------------------- */
+
+/* ==================================================================== */
+/* === TÉMOIGNAGES (CONTENU STATIQUE LOCAL) === */
+/* ==================================================================== */
 
 // Référence au conteneur où les témoignages seront affichés
 const temoignagesSlider = document.querySelector('#temoignages-slider');
 
+// Données statiques pour les témoignages (pas besoin de Firebase pour ça)
+const temoignagesData = [
+    {
+        citation: "Le travail est d'une finesse incroyable. Le meuble sur mesure a transformé mon salon.",
+        auteur: "M. Tchameni, Douala",
+        note: "5 étoiles"
+    },
+    {
+        citation: "Professionnalisme et respect des délais, la cuisine est parfaite !",
+        auteur: "Mme. Fotso, Yaoundé",
+        note: "5 étoiles"
+    },
+    {
+        citation: "Un artisan passionné et minutieux. J'ai été bluffé par la robustesse.",
+        auteur: "Dr. Njock, Babadjou",
+        note: "5 étoiles"
+    },
+    // Ajoute d'autres témoignages ici si tu le souhaites
+];
+
 function generateTemoignagesHTML() {
+    if (!temoignagesSlider) return; // Sécurité si la section n'existe pas
+    
     let htmlContent = '';
 
-    // Pour chaque objet dans le tableau `temoignagesData` (dans data.js)
     temoignagesData.forEach(temoignage => {
-        // Crée le code HTML pour un seul témoignage
         htmlContent += `
             <div class="temoignages-item">
                 <i class='bx bxs-quote-alt-left'></i>
@@ -143,16 +125,17 @@ function generateTemoignagesHTML() {
         `;
     });
 
-    // Injecte tout le code HTML dans le conteneur principal
     temoignagesSlider.innerHTML = htmlContent;
 }
 
 
 /* -------------------- FONCTION D'INITIALISATION -------------------- */
 
-// Exécute les fonctions de génération de contenu une fois que le DOM est chargé
+// Exécute les fonctions d'interface une fois que le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
-    generatePortfolioHTML();
-    setupPortfolioFilter();
+    // 1. Initialise les événements de filtre (loadProjects dans firebase-app.js prendra le relais)
+    window.setupPortfolioFilter();
+    
+    // 2. Génère le HTML des témoignages
     generateTemoignagesHTML();
 });

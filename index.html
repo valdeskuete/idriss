@@ -165,6 +165,54 @@
         </div>
     </section>
 
+    <div id="admin-trigger" style="text-align: center; margin-bottom: 20px; cursor: pointer; color: #333;">
+    <i class='bx bxs-lock-alt'></i> Accès Artisan
+    </div>
+
+    <div id="login-modal" class="admin-modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Connexion Artisan</h2>
+            <form id="login-form">
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Mot de passe" required>
+                <button type="submit" class="btn">Se connecter</button>
+            </form>
+        </div>
+    </div>
+
+    <section id="admin-panel" class="hidden" style="background: var(--clr-white); color: var(--clr-dark); border-top: 5px solid var(--clr-gold);">
+        <div class="heading">
+            <h2>Espace <span>Atelier</span></h2>
+            <button id="logout-btn" class="btn" style="background: red; color: white; font-size: 0.8rem;">Déconnexion</button>
+        </div>
+
+        <div class="admin-container" style="max-width: 600px; margin: 0 auto;">
+            <h3>Ajouter une nouvelle réalisation</h3>
+            <form id="add-project-form" class="contact-form">
+                <input type="text" id="proj-title" placeholder="Titre du meuble (ex: Lit Royal)" required>
+                
+                <select id="proj-category" required style="width: 100%; padding: 1.5rem; margin: 0.7rem 0; border-radius: 0.8rem; color: var(--clr-dark);">
+                    <option value="" disabled selected>Choisir une catégorie...</option>
+                    <option value="ameublement">Ameublement</option>
+                    <option value="agencement">Agencement / Cuisine</option>
+                    <option value="renovation">Rénovation</option>
+                </select>
+
+                <textarea id="proj-desc" placeholder="Description du travail effectué..." required></textarea>
+                
+                <label style="display: block; text-align: left; margin-top: 10px; font-weight: 600;">Photo du projet :</label>
+                <input type="file" id="proj-image" accept="image/*" required style="background: var(--clr-white); border: 1px solid #ccc; padding: 10px;">
+
+                <div style="height: 5px; background: #ccc; margin: 10px 0;">
+                    <div id="upload-progress" style="width: 0%; height: 5px; background: #25D366; transition: width 0.3s;"></div>
+                </div>
+
+                <button type="submit" class="btn">Publier le projet</button>
+            </form>
+        </div>
+    </section>
+
     <footer class="footer">
         <div class="footer-text">
             <p>Copyright &copy; 2025 Youssouf de Paris Meuble. Tous droits réservés.</p>
@@ -173,9 +221,9 @@
         <div class="footer-iconTop">
             <a href="#accueil"><i class='bx bx-up-arrow-alt'></i></a>
         </div>
-    </footer>
-
-    <script src="js/data.js"></script> 
+    </footer> 
+    
+    <script type="module" src="js/firebase-app.js"></script>
     
     <script src="js/script.js"></script>
 
