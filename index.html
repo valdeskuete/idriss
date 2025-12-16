@@ -89,7 +89,7 @@
         </div>
 
         <div class="portfolio-container" id="portfolio-list">
-            </div>
+        </div>
     </section>
 
     <section class="qualite" id="qualite">
@@ -120,24 +120,24 @@
         <h2 class="heading">Ce que <span>Nos Clients</span> disent</h2>
         
         <div class="temoignages-slider" id="temoignages-slider">
-            </div>
+        </div>
     </section>
 
     <section class="contact" id="contact">
         <h2 class="heading">Parlons <span>Bois</span></h2>
 
-        <form action="#" class="contact-form">
+        <form action="#" id="contact-form" class="contact-form">
             <p class="form-instruction">Laissez-nous un message et nous vous recontacterons dans les 24 heures.</p>
             <div class="input-box">
-                <input type="text" placeholder="Nom Complet" required>
-                <input type="email" placeholder="Adresse Email" required>
+                <input type="text" id="contact-name" placeholder="Nom Complet" required>
+                <input type="email" id="contact-email" placeholder="Adresse Email" required>
             </div>
             <div class="input-box">
-                <input type="text" placeholder="Numéro de Téléphone" required>
-                <input type="text" placeholder="Type de Projet (Lit, Cuisine, Rénovation...)" required>
+                <input type="text" id="contact-phone" placeholder="Numéro de Téléphone" required>
+                <input type="text" id="contact-subject" placeholder="Sujet / Type de Projet" required> 
             </div>
-            <textarea cols="30" rows="10" placeholder="Votre Message Détaillé" required></textarea>
-            <input type="submit" value="Envoyer le Message" class="btn">
+            <textarea id="contact-message" cols="30" rows="10" placeholder="Votre Message Détaillé" required></textarea>
+            <button type="submit" class="btn">Envoyer le Message</button>
         </form>
 
         <div class="contact-info">
@@ -203,9 +203,6 @@
                 
                 <label style="display: block; text-align: left; margin-top: 10px; font-weight: 600;">URL de la Photo du projet :</label>
                 <input type="text" id="proj-image-url" placeholder="Collez le lien direct de l'image ici (ex: https://site.com/photo.jpg)" required>
-
-                <div id="upload-progress" class="hidden"></div>
-
                 <button type="submit" class="btn">Publier le projet</button>
             </form>
         </div>
