@@ -757,3 +757,39 @@ section {
     color: var(--clr-white);
     margin-bottom: 20px;
 }
+
+/* --- Styles pour l'affichage des Témoignages dans le panneau Admin --- */
+
+.admin-temoignage-box {
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+.admin-temoignage-box p {
+    color: var(--clr-dark);
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+
+.admin-temoignage-box .citation-text {
+    font-style: italic;
+    margin-top: 8px;
+    margin-bottom: 10px;
+}
+
+.admin-temoignage-box .date-text {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+/* Positionnement du bouton de suppression pour les témoignages dans l'admin */
+.admin-temoignage-box .delete-btn {
+    position: static; /* Le retire de l'absolu du .admin-controls */
+    float: right;
+    margin-top: -30px; /* Remonte le bouton pour alignement */
+}
