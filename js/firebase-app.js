@@ -453,3 +453,66 @@ if (contactForm) {
         }
     });
 }
+/* ==================================================================== */
+/* ============= 8. GESTION DES MESSAGES DE CONTACT (ADMIN) ============= */
+/* ==================================================================== */
+
+/**
+ * CHARGE ET AFFICHE TOUS LES MESSAGES DE CONTACT POUR L'ADMINISTRATEUR.
+ */
+window.loadMessages = async () => {
+    const adminMessagesList = document.querySelector('#admin-messages-list');
+    if (!adminMessagesList) return;
+
+    if (!isAdmin) {
+        // Ne charge pas les messages si l'utilisateur n'est pas admin
+        adminMessagesList.innerHTML = '<p class="info-msg">Accès réservé à l\'administrateur.</p>';
+        return;
+    }
+
+    // Requête : Tous les messages, triés par date (du plus récent au plus ancien)
+    const q = query(collection(db, "messages"), orderBy("date", "desc"));
+
+    try {
+        const querySnapshot = await getDocs(q);
+        let htmlContent = '';
+        let messageCount = 0;
+
+        querySnapshot.forEach((doc) => {
+            const message = doc.data();
+            const messageId = doc.id;
+            messageCount++;
+
+            // Sécurisation de la date
+            const formattedDate = message.date && message.date.toDate ? 
+                                  message.date.toDate().toLocaleString() : 
+                                  'Date inconnue';
+
+            htmlContent += `
+                <div class="admin-message-box" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 0.5rem; background: #fff;">
+                    <p style="font-weight: bold;">De: ${message.name} (${message.email})</p>
+                    <p><strong>Sujet:</strong> ${message.subject}</p>
+                    <p><strong>Téléphone:</strong> ${message.phone || 'Non fourni'}</p>
+                    <p style="white-space: pre-wrap; margin: 10px 0;">${message.message}</p>
+                    <p style="font-size: 0.8em; color: #777;">Reçu le: ${formattedDate}</p>
+
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button onclick="window.deleteItem('messages', '${messageId}')" class="delete-btn" style="background: #990000; color: white; border: none; padding: 8px 15px; font-size: 0.9rem; border-radius: 0.5rem;">
+                            <i class='bx bx-trash'></i> Archiver/Supprimer
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        if (messageCount === 0) {
+            adminMessagesList.innerHTML = '<p class="info-msg">Aucun message de contact reçu pour l\'instant.</p>';
+        } else {
+            adminMessagesList.innerHTML = htmlContent;
+        }
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des messages :", error);
+        adminMessagesList.innerHTML = '<p class="error-msg" style="color: red;">Impossible de charger les messages.</p>';
+    }
+};
