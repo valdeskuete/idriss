@@ -312,8 +312,9 @@ window.loadTestimonials = async () => {
                                           'Date inconnue'; 
 
                     // 1. Bouton(s) d'action
-                    let actionButtons = `<button onclick="window.deleteItem('temoignages', '${temoignageId}')" class="delete-btn"><i class='bx bx-trash'></i> Supprimer</button>`;
-                    
+                    let actionButtons = `<button onclick="window.deleteItem('temoignages', '${temoignageId}')" class="delete-btn" style="background: #990000; color: white; border: none; padding: 8px 15px; font-size: 0.9rem; margin-left: 10px;">
+                                        <i class='bx bx-trash'></i> Supprimer
+                                    </button>`;
                     let statusLabel = isApproved ? 
                         '<span style="color: green; font-weight: bold;">Approuvé (Public)</span>' : 
                         '<span style="color: red; font-weight: bold;">En Attente (Privé)</span>';
