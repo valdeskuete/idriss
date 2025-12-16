@@ -294,67 +294,67 @@ window.loadTestimonials = async () => {
         }
         
         // --- ADMIN : Affichage de tous les témoignages pour modération ---
-        if (adminTemoignagesList && isAdmin) {
-            const adminSnapshot = await getDocs(adminQ);
-            let adminHtmlContent = '';
-            let adminCount = 0;
-            
-            adminSnapshot.forEach((doc) => {
-                const temoignage = doc.data();
-                const temoignageId = doc.id; 
-                adminCount++;
-                // SÉCURISATION DU STATUT : assure que c'est un booléen
-                const isApproved = temoignage.approved === true; 
+       // --- ADMIN : Affichage de tous les témoignages pour modération ---
+            if (adminTemoignagesList && isAdmin) {
+                const adminSnapshot = await getDocs(adminQ);
+                let adminHtmlContent = '';
+                let adminCount = 0;
                 
-                // SÉCURISATION DE LA DATE
-                const formattedDate = temoignage.date && temoignage.date.toDate ? 
-                                      temoignage.date.toDate().toLocaleDateString() : 
-                                      'Date inconnue'; // Affiche 'Date inconnue' si le champ manque ou est invalide
+                adminSnapshot.forEach((doc) => {
+                    const temoignage = doc.data();
+                    const temoignageId = doc.id; 
+                    adminCount++; // Compte les documents avant toute erreur
+                    const isApproved = temoignage.approved === true;
+                    
+                    // NOUVEAU: SÉCURISATION DE LA DATE. C'EST LA CORRECTION CRITIQUE.
+                    const formattedDate = temoignage.date && temoignage.date.toDate ? 
+                                          temoignage.date.toDate().toLocaleDateString() : 
+                                          'Date inconnue'; 
 
-                // 1. Bouton(s) d'action
-                let actionButtons = `<button onclick="window.deleteItem('temoignages', '${temoignageId}')" class="delete-btn"><i class='bx bx-trash'></i> Supprimer</button>`;
-                
-                let statusLabel = isApproved ? 
-                    '<span style="color: green; font-weight: bold;">Approuvé (Public)</span>' : 
-                    '<span style="color: red; font-weight: bold;">En Attente (Privé)</span>';
-                
-                if (!isApproved) {
-                    // Ajoute un bouton Approuver pour les éléments en attente
-                    actionButtons = `
-                        <button onclick="window.updateStatus('${temoignageId}', true)" class="btn" style="background: var(--clr-gold); margin-right: 10px; padding: 8px 15px; font-size: 0.9rem;">
-                            <i class='bx bx-check'></i> Approuver
-                        </button>
-                        ${actionButtons}
+                    // 1. Bouton(s) d'action
+                    let actionButtons = `<button onclick="window.deleteItem('temoignages', '${temoignageId}')" class="delete-btn"><i class='bx bx-trash'></i> Supprimer</button>`;
+                    
+                    let statusLabel = isApproved ? 
+                        '<span style="color: green; font-weight: bold;">Approuvé (Public)</span>' : 
+                        '<span style="color: red; font-weight: bold;">En Attente (Privé)</span>';
+                    
+                    if (!isApproved) {
+                        // Ajoute un bouton Approuver pour les éléments en attente
+                        actionButtons = `
+                            <button onclick="window.updateStatus('${temoignageId}', true)" class="btn" style="background: var(--clr-gold); margin-right: 10px; padding: 8px 15px; font-size: 0.9rem;">
+                                <i class='bx bx-check'></i> Approuver
+                            </button>
+                            ${actionButtons}
+                        `;
+                    } else {
+                        // Ajoute un bouton 'Mettre en attente' si déjà approuvé
+                        actionButtons = `
+                            <button onclick="window.updateStatus('${temoignageId}', false)" class="btn" style="background: var(--clr-dark); margin-right: 10px; padding: 8px 15px; font-size: 0.9rem;">
+                                <i class='bx bx-minus'></i> Mettre en attente
+                            </button>
+                            ${actionButtons}
+                        `;
+                    }
+
+                    // 2. Construction de la boîte admin
+                    adminHtmlContent += `
+                        <div class="admin-temoignage-box">
+                            <p><strong>Statut :</strong> ${statusLabel}</p>
+                            <p><strong>De:</strong> ${temoignage.auteur} (${temoignage.note})</p>
+                            <p class="citation-text">"${temoignage.citation}"</p>
+                            <p class="date-text">Soumis le: ${formattedDate}</p>
+                            
+                            <div style="text-align: right; margin-top: 10px;">${actionButtons}</div>
+                        </div>
                     `;
+                });
+
+                if (adminCount === 0) {
+                    adminTemoignagesList.innerHTML = '<p class="info-msg">Aucun témoignage à modérer.</p>';
                 } else {
-                    // Ajoute un bouton 'Mettre en attente' si déjà approuvé
-                    actionButtons = `
-                        <button onclick="window.updateStatus('${temoignageId}', false)" class="btn" style="background: var(--clr-dark); margin-right: 10px; padding: 8px 15px; font-size: 0.9rem;">
-                            <i class='bx bx-minus'></i> Mettre en attente
-                        </button>
-                        ${actionButtons}
-                    `;
+                    adminTemoignagesList.innerHTML = adminHtmlContent;
                 }
-
-                // 2. Construction de la boîte admin
-                adminHtmlContent += `
-                    <div class="admin-temoignage-box">
-                        <p><strong>Statut :</strong> ${statusLabel}</p>
-                        <p><strong>De:</strong> ${temoignage.auteur} (${temoignage.note})</p>
-                        <p class="citation-text">"${temoignage.citation}"</p>
-                        <p class="date-text">Soumis le: ${formattedDate}</p>
-                        
-                        <div style="text-align: right; margin-top: 10px;">${actionButtons}</div>
-                    </div>
-                `;
-            });
-            
-            if (adminCount === 0) {
-                adminTemoignagesList.innerHTML = '<p class="info-msg">Aucun témoignage à modérer.</p>';
-            } else {
-                adminTemoignagesList.innerHTML = adminHtmlContent;
             }
-        }
 
 
     } catch (error) {
