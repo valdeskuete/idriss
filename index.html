@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Youssouf de Paris Meuble - L'Élégance du Bois sur Mesure</title>
     <meta name="description" content="Menuiserie, ébénisterie et charpenterie haut de gamme au Cameroun. L'élégance du bois sur mesure.">
+    
     <link rel="stylesheet" href="css/style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -186,8 +187,8 @@
         </div>
     </section>
 
-    <div id="admin-trigger" style="text-align: center; margin-bottom: 20px; cursor: pointer; color: #333;">
-    <i class='bx bxs-lock-alt'></i> Accès Artisan
+    <div id="admin-trigger" style="text-align: center; margin-bottom: 20px; cursor: pointer; color: var(--clr-gold);">
+        <i class='bx bxs-lock-alt'></i> Accès Artisan
     </div>
 
     <div id="login-modal" class="admin-modal hidden">
@@ -209,6 +210,7 @@
         </div>
 
         <div class="admin-container" style="max-width: 600px; margin: 0 auto;">
+            
             <h3>Ajouter une nouvelle réalisation</h3>
             <form id="add-project-form" class="contact-form">
                 <input type="text" id="proj-title" placeholder="Titre du meuble (ex: Lit Royal)" required>
@@ -226,9 +228,10 @@
                 <input type="text" id="proj-image-url" placeholder="Collez le lien direct de l'image ici (ex: https://site.com/photo.jpg)" required>
                 <button type="submit" class="btn">Publier le projet</button>
             </form>
+
             <h3 style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 30px;">Modération des Témoignages</h3>
             <div id="admin-temoignages-list" style="max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #eee;">
-            </div>
+                </div>
 
         </div>
     </section>
@@ -243,9 +246,9 @@
         </div>
     </footer> 
     
-    <script type="module" src="js/firebase-app.js"></script>
+    <script type="module" src="js/firebase-app.js"></script> 
     
-    <script src="js/script.js"></script>
+    <script src="js/script.js"></script> 
 
 </body>
 </html>
