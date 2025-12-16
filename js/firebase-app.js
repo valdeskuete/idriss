@@ -146,6 +146,7 @@ onAuthStateChanged(auth, (user) => {
         adminTrigger?.classList.add('hidden');
         window.loadProjects('all'); // Recharger les projets pour afficher les boutons admin
         window.loadTestimonials(); // Recharger les témoignages pour l'admin
+        window.loadMessages(); // <--- AJOUT CRITIQUE ICI
     } else {
         // Utilisateur déconnecté
         isAdmin = false;
@@ -153,6 +154,8 @@ onAuthStateChanged(auth, (user) => {
         adminTrigger?.classList.remove('hidden');
         window.loadProjects('all'); // Recharger les projets sans les boutons admin
     }
+
+  
 });
 
 
