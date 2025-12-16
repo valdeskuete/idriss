@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youssouf de Paris Meuble - L'Élégance du Bois sur Mesure</title>
+    <meta name="description" content="Menuiserie, ébénisterie et charpenterie haut de gamme au Cameroun. L'élégance du bois sur mesure.">
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <div class="promo-banner">
+        🚨 OFFRE SPÉCIALE : 25% de réduction sur votre première commande d'ameublement sur mesure ! 🚨
+    </div>
+
+    <header class="header">
+        <a href="#accueil" class="logo">
+            Youssouf de Paris<span> Meuble</span>
+        </a>
+
+        <i class='bx bx-menu' id="menu-icon"></i>
+
+        <nav class="navbar">
+            <a href="#accueil" class="active">Accueil</a>
+            <a href="#services">Nos Services</a>
+            <a href="#projets">Réalisations</a>
+            <a href="#qualite">Notre Engagement</a>
+            <a href="#temoignages">Témoignages</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <section class="home" id="accueil">
+        <div class="home-content">
+            <h1>Artisanat de Luxe & Ébénisterie</h1>
+            <h3>Créer l'intérieur qui vous ressemble.</h3>
+            <p>"Votre intérieur, notre passion."</p>
+
+            <div class="contact-buttons">
+                <a href="#contact" class="btn btn-primary">Demander un Devis</a>
+                <a href="https://wa.me/237678689036" target="_blank" class="btn btn-whatsapp">
+                    <i class='bx bxl-whatsapp'></i> WhatsApp
+                </a>
+            </div>
+        </div>
+
+        <div class="home-img">
+            <img src="images/home-artisan.jpg" alt="Artisan menuisier travaillant le bois">
+        </div>
+    </section>
+
+    <section class="services" id="services">
+        <h2 class="heading">Notre <span>Savoir-Faire</span></h2>
+
+        <div class="services-container">
+            <div class="services-box">
+                <i class='bx bxs-component'></i>
+                <h3>Menuiserie & Ébénisterie</h3>
+                <p>Création de mobilier sur mesure : lits, armoires, tables, chaises et canapés. Nous donnons vie à vos idées avec des essences de bois nobles.</p>
+                <a href="#projets" class="btn">Voir les projets</a>
+            </div>
+
+            <div class="services-box">
+                <i class='bx bxs-kitchen'></i>
+                <h3>Agencement Intérieur</h3>
+                <p>Conception et installation de cuisines, dressings, bureaux et portes en bois massif. Optimisation de l'espace et fonctionnalité garanties.</p>
+                <a href="#projets" class="btn">Voir les projets</a>
+            </div>
+
+            <div class="services-box">
+                <i class='bx bxs-home-alt-2'></i>
+                <h3>Charpenterie & Rénovation</h3>
+                <p>Travaux de charpente, réfection de meubles anciens, et prestations de services techniques. Nous redonnons vie à vos structures.</p>
+                <a href="#projets" class="btn">Voir les projets</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="portfolio" id="projets">
+        <h2 class="heading">Nos <span>Réalisations</span></h2>
+
+        <div class="portfolio-filter">
+            <button class="filter-btn active" data-filter="all">Tous les Projets</button>
+            <button class="filter-btn" data-filter="ameublement">Ameublement</button>
+            <button class="filter-btn" data-filter="agencement">Agencement</button>
+            <button class="filter-btn" data-filter="renovation">Rénovation</button>
+        </div>
+
+        <div class="portfolio-container" id="portfolio-list">
+            </div>
+    </section>
+
+    <section class="qualite" id="qualite">
+        <h2 class="heading">Notre <span>Engagement</span></h2>
+        <div class="qualite-container">
+            
+            <div class="qualite-item">
+                <i class='bx bxs-badge-check'></i>
+                <h3>Finitions Vernies Haut de Gamme</h3>
+                <p>Nous utilisons des produits de finition professionnelle pour garantir un rendu esthétique impeccable, une résistance aux rayures et une longévité maximale.</p>
+            </div>
+
+            <div class="qualite-item">
+                <i class='bx bxs-timer'></i>
+                <h3>Respect Scrupuleux des Délais</h3>
+                <p>Un meuble sur mesure est un investissement. Nous nous engageons contractuellement à respecter la date de livraison convenue, sans compromis sur la qualité.</p>
+            </div>
+
+            <div class="qualite-item">
+                <i class='bx bxs-tree'></i>
+                <h3>Sélection Rigoureuse du Bois</h3>
+                <p>Nous privilégions le bois local traité, sélectionné pour sa robustesse et son esthétique, garantissant un produit écologique et durable.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="temoignages" id="temoignages">
+        <h2 class="heading">Ce que <span>Nos Clients</span> disent</h2>
+        
+        <div class="temoignages-slider" id="temoignages-slider">
+            </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <h2 class="heading">Parlons <span>Bois</span></h2>
+
+        <form action="#" class="contact-form">
+            <p class="form-instruction">Laissez-nous un message et nous vous recontacterons dans les 24 heures.</p>
+            <div class="input-box">
+                <input type="text" placeholder="Nom Complet" required>
+                <input type="email" placeholder="Adresse Email" required>
+            </div>
+            <div class="input-box">
+                <input type="text" placeholder="Numéro de Téléphone" required>
+                <input type="text" placeholder="Type de Projet (Lit, Cuisine, Rénovation...)" required>
+            </div>
+            <textarea cols="30" rows="10" placeholder="Votre Message Détaillé" required></textarea>
+            <input type="submit" value="Envoyer le Message" class="btn">
+        </form>
+
+        <div class="contact-info">
+            <div class="info-item">
+                <i class='bx bxs-phone-call'></i>
+                <h3>Appel & WhatsApp</h3>
+                <p><a href="tel:+237678689036">+237 678 68 90 36</a></p>
+            </div>
+            <div class="info-item">
+                <i class='bx bxs-envelope'></i>
+                <h3>Email Professionnel</h3>
+                <p><a href="mailto:jinjayoussouf@gmail.com">jinjayoussouf@gmail.com</a></p>
+            </div>
+            <div class="info-item">
+                <i class='bx bxs-map'></i>
+                <h3>Localisation</h3>
+                <p>Babadjou - Ouest, Cameroun</p>
+            </div>
+            
+            <div class="social-links">
+                <a href="URL_FACEBOOK_A_FOURNIR" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="URL_TIKTOK_A_FOURNIR" target="_blank"><i class="fab fa-tiktok"></i></a>
+                <a href="https://wa.me/237678689036" target="_blank"><i class='bx bxl-whatsapp'></i></a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-text">
+            <p>Copyright &copy; 2025 Youssouf de Paris Meuble. Tous droits réservés.</p>
+        </div>
+
+        <div class="footer-iconTop">
+            <a href="#accueil"><i class='bx bx-up-arrow-alt'></i></a>
+        </div>
+    </footer>
+
+    <script src="js/data.js"></script> 
+    
+    <script src="js/script.js"></script>
+
+</body>
+</html>
