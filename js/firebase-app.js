@@ -10,8 +10,8 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://w
 
 // 2. CONFIGURATION FIREBASE (REMPLACE PAR TES CLÉS !)
 const firebaseConfig = {
-    // Insère ici ton apiKey: "AIzaSyByja4G-kK2EIjR3bTUoNRJpzlg1tr-3h8",
-    apiKey: "AIzaSyByja4G-kK2EIjR3bTUoNRJpzlg1tr-3h8", // Remplacer par ta clé réelle
+    // Insère ici ton apiKey: "AIzaSyDF7XWK56sp4x5ASvi0ipzkTrcp4bZEfwo",
+    apiKey: "AIzaSyDF7XWK56sp4x5ASvi0ipzkTrcp4bZEfwo", // Remplacer par ta clé réelle
     authDomain: "youssouf-paris-meuble.firebaseapp.com",
     projectId: "youssouf-paris-meuble",
     storageBucket: "youssouf-paris-meuble.firebasestorage.app",
