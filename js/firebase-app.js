@@ -1,12 +1,14 @@
 /* ==========================================================
-   FIREBASE APP - GESTION DYNAMIQUE (AUTH, DATABASE & STORAGE)
-   ========================================================== */
+    FIREBASE APP - GESTION DYNAMIQUE (AUTH, DATABASE & STORAGE)
+    ========================================================== */
 
 // 1. IMPORT DES FONCTIONS FIREBASE (SDK MODULAIRE)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+// IMPORTANT: deleteDoc est déjà importé, c'est parfait.
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// NOTE: L'IMPORT DU STORAGE EST RETIRÉ CAR IL N'EST PLUS UTILISÉ.
+// import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 // 2. CONFIGURATION FIREBASE (REMPLACE PAR TES CLÉS !)
 const firebaseConfig = {
@@ -23,7 +25,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
+// NOTE: L'INITIALISATION DU STORAGE EST RETIRÉE CAR IL N'EST PLUS UTILISÉ.
+// const storage = getStorage(app); 
 
 // DOM ELEMENTS
 const loginModal = document.getElementById('login-modal');
@@ -33,65 +36,90 @@ const loginForm = document.getElementById('login-form');
 const logoutBtn = document.getElementById('logout-btn');
 const projectForm = document.getElementById('add-project-form');
 const portfolioList = document.getElementById('portfolio-list');
-const uploadProgress = document.getElementById('upload-progress');
+// const uploadProgress = document.getElementById('upload-progress'); // Non utilisé sans Storage
 
+let isAdmin = false; // Flag pour l'affichage conditionnel
 
 /* ==================== 1. GESTION DE L'AUTHENTIFICATION ==================== */
 
 // Vérifier si l'utilisateur est connecté (Admin)
 onAuthStateChanged(auth, (user) => {
     if (user) {
+        isAdmin = true;
         adminPanel.classList.remove('hidden');
         loginModal.classList.add('hidden');
         adminTrigger.style.display = 'none'; 
     } else {
+        isAdmin = false;
         adminPanel.classList.add('hidden');
         adminTrigger.style.display = 'block';
     }
+    // Recharger les projets pour appliquer l'affichage Admin/Suppression
+    loadProjects(); 
 });
 
 // Ouvrir le modal login
-adminTrigger.addEventListener('click', () => {
-    loginModal.classList.remove('hidden');
-});
+if (adminTrigger) {
+    adminTrigger.addEventListener('click', () => {
+        loginModal.classList.remove('hidden');
+    });
+}
 
 // Fermer le modal (croix)
-document.querySelector('.close-modal').addEventListener('click', () => {
-    loginModal.classList.add('hidden');
-});
+const closeModalBtn = document.querySelector('.close-modal');
+if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', () => {
+        loginModal.classList.add('hidden');
+    });
+}
+
 
 // Connexion (Login)
-loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
 
-    signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-            loginForm.reset();
-            // Le onAuthStateChanged ci-dessus va gérer l'affichage de l'Admin Panel
-            alert("Bienvenue Maître Artisan !");
-        })
-        .catch((error) => {
-            alert("Erreur de connexion : Vérifiez l'email et le mot de passe.");
-        });
-});
+        signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                loginForm.reset();
+                alert("Bienvenue Maître Artisan !");
+            })
+            .catch((error) => {
+                alert("Erreur de connexion : Vérifiez l'email et le mot de passe.");
+            });
+    });
+}
+
 
 // Déconnexion
-logoutBtn.addEventListener('click', () => {
-    signOut(auth).then(() => {
-        alert("Déconnecté avec succès.");
-        // Redémarrer le chargement des projets pour garantir la visibilité publique
-        loadProjects(); 
-        window.location.reload();
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            alert("Déconnecté avec succès.");
+            window.location.reload();
+        });
     });
-});
+}
 
 
-/* ==================== 2. LECTURE DES PROJETS (GALERIE) ==================== */
+/* ==================== 2. LECTURE & SUPPRESSION DES PROJETS (GALERIE) ==================== */
 
 // Fonction pour générer le HTML d'un projet
-function createProjectHTML(projet) {
+function createProjectHTML(projet, projectId) {
+    let adminControls = '';
+    // Ajout du bouton de suppression si l'utilisateur est Admin
+    if (isAdmin) {
+        adminControls = `
+            <div class="admin-controls">
+                <button onclick="window.deleteItem('projets', '${projectId}')" class="delete-btn" title="Supprimer le projet">
+                    <i class='bx bx-trash'></i> Supprimer
+                </button>
+            </div>
+        `;
+    }
+
     return `
         <div class="portfolio-box" data-category="${projet.categorie}">
             <img src="${projet.imageUrl}" alt="${projet.titre}">
@@ -100,15 +128,17 @@ function createProjectHTML(projet) {
                 <p>${projet.description}</p>
                 <a href="${projet.imageUrl}" target="_blank" title="Voir l'image en grand"><i class='bx bx-search-alt-2'></i></a>
             </div>
+            ${adminControls}
         </div>
     `;
 }
 
 // Fonction pour charger et afficher tous les projets
 window.loadProjects = async function(filterCategory = 'all') {
+    if (!portfolioList) return; 
+
     portfolioList.innerHTML = '<p style="color:white; text-align:center;">Chargement des réalisations en cours...</p>';
     
-    // Requête : on trie par date pour que les plus récents apparaissent en premier
     const q = query(collection(db, "projets"), orderBy("date", "desc"));
     
     try {
@@ -118,9 +148,10 @@ window.loadProjects = async function(filterCategory = 'all') {
 
         querySnapshot.forEach((doc) => {
             const projet = doc.data();
-            // Filtrage côté client (plus simple pour la galerie filtrable)
+            const projectId = doc.id; // Récupère l'ID pour la suppression
+            
             if (filterCategory === 'all' || projet.categorie === filterCategory) {
-                 htmlContent += createProjectHTML(projet);
+                 htmlContent += createProjectHTML(projet, projectId);
                  projectsCount++;
             }
         });
@@ -133,7 +164,6 @@ window.loadProjects = async function(filterCategory = 'all') {
             portfolioList.innerHTML = htmlContent;
         }
 
-        // Si la fonction de filtrage existe (dans script.js), on la réinitialise
         if(window.setupPortfolioFilter) window.setupPortfolioFilter(); 
 
     } catch (error) {
@@ -145,115 +175,84 @@ window.loadProjects = async function(filterCategory = 'all') {
 // Lancement au démarrage
 loadProjects();
 
-/* ==================== 3. AJOUT DE PROJET (SANS UPLOAD) ==================== */
 
-projectForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+/* ==================== FONCTION DE SUPPRESSION GÉNÉRIQUE ==================== */
 
-    const title = document.getElementById('proj-title').value;
-    const category = document.getElementById('proj-category').value;
-    const desc = document.getElementById('proj-desc').value;
-    // Nouvelle variable pour récupérer l'URL au lieu du fichier
-    const imageUrl = document.getElementById('proj-image-url').value; 
-
-    if (!imageUrl || !imageUrl.startsWith('http')) return alert("Veuillez coller une URL d'image valide.");
-
-    const submitBtn = projectForm.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Publication en cours...";
+/**
+ * Supprime un document dans une collection spécifiée.
+ * @param {string} collectionName - Le nom de la collection (ex: 'projets').
+ * @param {string} docId - L'ID du document à supprimer.
+ */
+window.deleteItem = async (collectionName, docId) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cet élément ?")) return;
 
     try {
-        // A. SAUVEGARDE DES DONNÉES DANS FIRESTORE (sans passer par l'upload)
-        await addDoc(collection(db, "projets"), {
-            titre: title,
-            categorie: category,
-            description: desc,
-            // Utilisation directe de l'URL fournie
-            imageUrl: imageUrl, 
-            date: new Date()
-        });
-
-        alert("✅ Projet ajouté avec succès ! (Utilisation d'une URL externe)");
-        projectForm.reset();
-        submitBtn.textContent = "Publier le projet";
-        submitBtn.disabled = false;
-
-        // Recharger la galerie pour voir le nouveau projet
-        loadProjects();
+        await deleteDoc(doc(db, collectionName, docId));
+        alert("✅ Élément supprimé avec succès !");
+        
+        // Rafraîchir l'affichage après la suppression
+        if (collectionName === 'projets') {
+            window.loadProjects();
+        } 
+        if (collectionName === 'temoignages') {
+            window.loadTestimonials(); 
+        }
 
     } catch (error) {
-        console.error("Erreur critique lors de l'ajout:", error);
-        alert("Erreur lors de l'ajout : " + error.message);
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Publier le projet";
+        console.error(`Erreur lors de la suppression de l'élément dans ${collectionName}:`, error);
+        alert("Erreur lors de la suppression : Vérifiez les permissions Firestore ou la connexion. " + error.message);
     }
-});
+};
 
-/* ==================== 3. AJOUT DE PROJET (UPLOAD & SAVE) ==================== */
 
-    /*projectForm.addEventListener('submit', async (e) => {
+/* ==================== 3. AJOUT DE PROJET (SANS UPLOAD) ==================== */
+
+if (projectForm) {
+    projectForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const title = document.getElementById('proj-title').value;
         const category = document.getElementById('proj-category').value;
         const desc = document.getElementById('proj-desc').value;
-        const file = document.getElementById('proj-image').files[0];
+        // Nouvelle variable pour récupérer l'URL au lieu du fichier
+        const imageUrl = document.getElementById('proj-image-url').value; 
 
-        if (!file) return alert("Veuillez sélectionner une image.");
+        if (!imageUrl || !imageUrl.startsWith('http')) return alert("Veuillez coller une URL d'image valide.");
 
         const submitBtn = projectForm.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
-        submitBtn.textContent = "Téléchargement en cours (0%)...";
+        submitBtn.textContent = "Publication en cours...";
 
         try {
-            // A. UPLOAD IMAGE VERS FIREBASE STORAGE
-            const fileName = `${Date.now()}_${file.name}`;
-            const storageRef = ref(storage, 'projets/' + fileName);
-            const uploadTask = uploadBytesResumable(storageRef, file);
+            // A. SAUVEGARDE DES DONNÉES DANS FIRESTORE
+            await addDoc(collection(db, "projets"), {
+                titre: title,
+                categorie: category,
+                description: desc,
+                // Utilisation directe de l'URL fournie
+                imageUrl: imageUrl, 
+                date: new Date()
+            });
 
-            // Suivi de la progression (Barre de progression visuelle)
-            uploadTask.on('state_changed', 
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    uploadProgress.style.width = progress + '%';
-                    submitBtn.textContent = `Téléchargement en cours (${Math.round(progress)}%)...`;
-                }, 
-                (error) => {
-                    throw new Error("Erreur d'upload : " + error.message);
-                }, 
-                async () => {
-                    // B. SAUVEGARDE DES DONNÉES DANS FIRESTORE
-                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            alert("✅ Projet ajouté avec succès !");
+            projectForm.reset();
+            submitBtn.textContent = "Publier le projet";
+            submitBtn.disabled = false;
 
-                    await addDoc(collection(db, "projets"), {
-                        titre: title,
-                        categorie: category,
-                        description: desc,
-                        imageUrl: downloadURL,
-                        date: new Date()
-                    });
-
-                    alert("✅ Projet ajouté avec succès !");
-                    projectForm.reset();
-                    uploadProgress.style.width = '0%';
-                    submitBtn.textContent = "Publier le projet";
-                    submitBtn.disabled = false;
-                    
-                    // Recharger la galerie pour voir le nouveau projet
-                    loadProjects();
-                }
-            );
+            // Recharger la galerie pour voir le nouveau projet
+            loadProjects();
 
         } catch (error) {
-            console.error("Erreur critique :", error);
+            console.error("Erreur critique lors de l'ajout:", error);
             alert("Erreur lors de l'ajout : " + error.message);
             submitBtn.disabled = false;
             submitBtn.textContent = "Publier le projet";
-            uploadProgress.style.width = '0%';
         }
-    });*/
+    });
+}
 
-    /* ==================================================================== */
+
+/* ==================================================================== */
 /* ============= 4. GESTION DU FORMULAIRE DE CONTACT (MESSAGES) ============= */
 /* ==================================================================== */
 
@@ -281,10 +280,10 @@ if (contactForm) {
                 sujet: subject,
                 message: message,
                 date: new Date(),
-                traite: false // Pour indiquer qu'il est nouveau
+                traite: false 
             });
 
-            alert("✅ Votre message a été envoyé avec succès !");
+            alert("✅ Votre message a été envoyé avec succès ! Consultez la base de données.");
             contactForm.reset();
 
         } catch (error) {
@@ -308,16 +307,23 @@ window.loadTestimonials = async () => {
     const temoignagesSlider = document.querySelector('#temoignages-slider');
     if (!temoignagesSlider) return;
 
-    // Utiliser getDocs pour récupérer les témoignages une seule fois au chargement
+    temoignagesSlider.innerHTML = '<p class="loading-msg">Chargement des témoignages...</p>';
+
     const q = query(collection(db, "temoignages"), orderBy("date", "desc"));
     
     try {
         const querySnapshot = await getDocs(q);
         let htmlContent = '';
+        let count = 0;
         
         querySnapshot.forEach((doc) => {
             const temoignage = doc.data();
+            const temoignageId = doc.id; // Récupère l'ID pour une potentielle suppression admin
+            count++;
             
+            // Note: Nous n'affichons pas le bouton de suppression sur le site public
+            // L'ajout d'une interface d'admin pour les témoignages n'est pas prévue ici.
+
             htmlContent += `
                 <div class="temoignages-item">
                     <i class='bx bxs-quote-alt-left'></i>
@@ -328,7 +334,12 @@ window.loadTestimonials = async () => {
             `;
         });
         
-        temoignagesSlider.innerHTML = htmlContent;
+        if (count === 0) {
+            temoignagesSlider.innerHTML = '<p class="info-msg">Aucun témoignage n\'a encore été publié.</p>';
+        } else {
+            temoignagesSlider.innerHTML = htmlContent;
+        }
+
 
     } catch (error) {
         console.error("Erreur lors du chargement des témoignages :", error);
@@ -337,8 +348,4 @@ window.loadTestimonials = async () => {
 };
 
 // --- Appel de la fonction au chargement ---
-// Nous devons aussi ajouter cet appel à la fonction d'initialisation dans script.js
-// Mais en attendant, pour le tester:
 window.loadTestimonials();
-
-
