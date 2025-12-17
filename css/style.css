@@ -859,3 +859,18 @@ section {
 .heading span {
     color: var(--clr-gold); /* Ou votre code couleur ex: #d4af37 */
 }
+
+/* Correction pour la section À Propos */
+.about {
+    background: #1a1a1a !important; /* Force le fond sombre */
+    color: #ffffff !important;      /* Force le texte en blanc */
+}
+
+.about h2 span {
+    color: #d4af37; /* Assure que "L'Atelier" reste doré */
+}
+
+.about p {
+    color: #cccccc; /* Gris clair pour le texte pour une lecture douce */
+    font-size: 1.6rem;
+}
