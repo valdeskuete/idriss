@@ -424,40 +424,30 @@ window.loadMessages = async () => {
 };
 
 /* ==================================================================== */
-/* ============= 9. INTÉGRATIONS EXTERNES (GOOGLE & BOTPRESS) ========= */
+/* ============= 9. INTÉGRATIONS EXTERNES (BOTPRESS) ================== */
 /* ==================================================================== */
 
 function loadExternalServices() {
-    
-    // --- A. GOOGLE ANALYTICS & SEARCH CONSOLE ---
-    const googleId = "VOTRE_ID_GOOGLE_ICI"; // À remplacer par votre ID G-XXXXX si vous en avez un
-    if (googleId && googleId !== "VOTRE_ID_GOOGLE_ICI") {
-        const scriptG = document.createElement('script');
-        scriptG.async = true;
-        scriptG.src = `https://www.googletagmanager.com/gtag/js?id=${googleId}`;
-        document.head.appendChild(scriptG);
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', googleId);
-    }
-
-    // --- B. ASSISTANT BOTPRESS (Youssouf Idriss AI) ---
-    // Chargement du script d'injection principal
+    // 1. Script d'injection
     const botpressInject = document.createElement('script');
     botpressInject.src = "https://cdn.botpress.cloud/webchat/v3.5/inject.js";
     botpressInject.async = true;
     document.head.appendChild(botpressInject);
 
-    // Chargement du script de configuration spécifique de votre bot
     botpressInject.onload = () => {
+        // 2. Votre configuration spécifique
         const botpressConfig = document.createElement('script');
         botpressConfig.src = "https://files.bpcontent.cloud/2025/12/16/01/20251216012441-91PE11FM.js";
         botpressConfig.defer = true;
         document.head.appendChild(botpressConfig);
-        console.log("🤖 Assistant AI Youssouf Idriss prêt.");
+
+        botpressConfig.onload = () => {
+            // 3. Envoyer un message automatique après 3 secondes
+            setTimeout(() => {
+                window.botpressWebChat.sendEvent({ type: 'show' }); // Ouvre la fenêtre
+            }, 3000); 
+        };
     };
 }
 
-// Lancement automatique au chargement du DOM
 document.addEventListener('DOMContentLoaded', loadExternalServices);
