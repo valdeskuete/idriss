@@ -102,3 +102,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Remarque: Le chargement initial des projets et témoignages est géré à la fin
     // de `firebase-app.js` pour s'assurer que Firebase est initialisé.
 });
+
