@@ -3,12 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youssouf de Paris Meuble - L'Élégance du Bois sur Mesure</title>
-    <meta name="description" content="Menuiserie, ébénisterie et charpenterie haut de gamme au Cameroun. L'élégance du bois sur mesure.">
     
+    <title>Youssouf Idriss | Menuisier Ébéniste sur Mesure à Paris</title>
+    <meta name="description" content="Artisan menuisier expert à Paris & Cameroun. Création de meubles sur mesure, bibliothèques, dressings et rénovation. Travail du bois de haute qualité. Devis gratuit.">
+    <meta name="keywords" content="Menuisier Paris, Ébéniste Cameroun, meuble sur mesure, fabrication bibliothèque bois, dressing sur mesure, Youssouf Idriss">
+    <meta name="author" content="Youssouf Idriss">
+
+    <meta property="og:title" content="Youssouf Idriss - Artisan Menuisier">
+    <meta property="og:description" content="Confiez vos projets de menuiserie sur mesure à un expert passionné.">
+    <meta property="og:image" content="https://valdeskuete.github.io/idriss/img/logo.png"> 
+    <meta property="og:url" content="https://valdeskuete.github.io/idriss/">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/style.css">
+    
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Carpenter",
+      "name": "Youssouf Idriss - Menuisier Ébéniste",
+      "image": "https://valdeskuete.github.io/idriss/img/logo.png",
+      "url": "https://valdeskuete.github.io/idriss/",
+      "telephone": "+237678689036", 
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Paris",
+        "addressCountry": "FR"
+      },
+      "priceRange": "$$",
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "08:00",
+        "closes": "18:00"
+      }
+    }
+    </script>
 </head>
 <body>
 
@@ -90,25 +124,22 @@
         </div>
 
         <div class="portfolio-container" id="portfolio-list">
-        </div>
+            </div>
     </section>
 
     <section class="qualite" id="qualite">
         <h2 class="heading">Notre <span>Engagement</span></h2>
         <div class="qualite-container">
-            
             <div class="qualite-item">
                 <i class='bx bxs-badge-check'></i>
                 <h3>Finitions Vernies Haut de Gamme</h3>
                 <p>Nous utilisons des produits de finition professionnelle pour garantir un rendu esthétique impeccable, une résistance aux rayures et une longévité maximale.</p>
             </div>
-
             <div class="qualite-item">
                 <i class='bx bxs-timer'></i>
                 <h3>Respect Scrupuleux des Délais</h3>
                 <p>Un meuble sur mesure est un investissement. Nous nous engageons contractuellement à respecter la date de livraison convenue, sans compromis sur la qualité.</p>
             </div>
-
             <div class="qualite-item">
                 <i class='bx bxs-tree'></i>
                 <h3>Sélection Rigoureuse du Bois</h3>
@@ -121,27 +152,21 @@
         <h2 class="heading">Ce que <span>Nos Clients</span> disent</h2>
         
         <div class="temoignages-slider" id="temoignages-slider">
-        </div>
+            </div>
 
         <h3 class="sub-heading">Partagez Votre Expérience</h3>
         <form id="add-temoignage-form" class="contact-form" style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid var(--clr-gold); border-radius: 0.8rem;">
             <p class="form-instruction">Votre avis est précieux. Laissez votre témoignage ci-dessous.</p>
-            
             <input type="text" id="tem-auteur" placeholder="Votre Nom ou Prénom" required>
-            
             <select id="tem-note" required style="width: 100%; padding: 1.5rem; margin: 0.7rem 0; border-radius: 0.8rem; color: var(--clr-dark); background-color: var(--clr-white);">
                 <option value="" disabled selected>Note (Satisfaction)</option>
                 <option value="5 étoiles">🌟🌟🌟🌟🌟 (5 étoiles)</option>
                 <option value="4 étoiles">🌟🌟🌟🌟 (4 étoiles)</option>
                 <option value="3 étoiles">🌟🌟🌟 (3 étoiles)</option>
             </select>
-            
             <textarea id="tem-citation" cols="30" rows="5" placeholder="Votre Témoignage Détaillé (Citation)" required></textarea>
-            
             <button type="submit" class="btn">Soumettre mon Témoignage</button>
-
             <div id="tem-message" style="margin-top: 10px; color: var(--clr-gold);"></div>
-
         </form>
     </section>
 
@@ -195,7 +220,10 @@
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2>Connexion Artisan</h2>
-            <form id="login-form"> <input type="email" id="login-email" placeholder="Email" required> <input type="password" id="login-password" placeholder="Mot de passe" required> <button type="submit" class="btn">Se connecter</button>
+            <form id="login-form"> 
+                <input type="email" id="login-email" placeholder="Email" required> 
+                <input type="password" id="login-password" placeholder="Mot de passe" required> 
+                <button type="submit" class="btn">Se connecter</button>
             </form>
         </div>
     </div>
@@ -211,29 +239,26 @@
             <h3>Ajouter une nouvelle réalisation</h3>
             <form id="add-project-form" class="contact-form">
                 <input type="text" id="proj-title" placeholder="Titre du meuble (ex: Lit Royal)" required>
-                
                 <select id="proj-category" required style="width: 100%; padding: 1.5rem; margin: 0.7rem 0; border-radius: 0.8rem; color: var(--clr-dark);">
                     <option value="" disabled selected>Choisir une catégorie...</option>
                     <option value="ameublement">Ameublement</option>
                     <option value="agencement">Agencement / Cuisine</option>
                     <option value="renovation">Rénovation</option>
                 </select>
-
                 <textarea id="proj-desc" placeholder="Description du travail effectué..." required></textarea>
-                
                 <label style="display: block; text-align: left; margin-top: 10px; font-weight: 600;">URL de la Photo du projet :</label>
-                <input type="text" id="proj-image-url" placeholder="Collez le lien direct de l'image ici (ex: https://site.com/photo.jpg)" required>
+                <input type="text" id="proj-image-url" placeholder="Collez le lien direct de l'image ici" required>
                 <button type="submit" class="btn">Publier le projet</button>
             </form>
 
             <h3 style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 30px;">Modération des Témoignages</h3>
             <div id="admin-temoignages-list" style="max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #eee;">
             </div>
+
             <h3 style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 30px;">Boîte de Réception des Messages</h3>
             <div id="admin-messages-list" style="max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #eee;">
                 <p>Chargement des messages...</p>
             </div>
-
 
         </div>
     </section>
@@ -242,14 +267,12 @@
         <div class="footer-text">
             <p>Copyright &copy; 2025 Youssouf de Paris Meuble. Tous droits réservés.</p>
         </div>
-
         <div class="footer-iconTop">
             <a href="#accueil"><i class='bx bx-up-arrow-alt'></i></a>
         </div>
     </footer> 
     
     <script type="module" src="js/firebase-app.js"></script> 
-    
     <script src="js/script.js"></script> 
 
 </body>
