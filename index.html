@@ -21,7 +21,8 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <script type="application/ld+json">
+    <script src="https://demo.campay.net/sdk/js?app-id=Wkhdc4fdOVb_o9MtZhn0Kai-QfdUGPkAh81dOANo8gPsaPCSo3JDYHuv6S2rltdcv35ZHJAAOPcdOzoio8JXcw"></script>
+
     <script type="application/ld+json">
     {
     "@context": "https://schema.org",
@@ -43,7 +44,6 @@
     },
     "description": "Menuiserie de luxe basée à Bafoussam, servant tout le Cameroun."
     }
-</script>
     </script>
 </head>
 <body>
@@ -56,9 +56,7 @@
         <a href="#accueil" class="logo">
             Youssouf de Paris<span> Meuble</span>
         </a>
-
         <i class='bx bx-menu' id="menu-icon"></i>
-
         <nav class="navbar">
             <a href="#accueil" class="active">Accueil</a>
             <a href="#services">Nos Services</a>
@@ -78,12 +76,14 @@
 
             <div class="contact-buttons">
                 <a href="#contact" class="btn btn-primary">Demander un Devis</a>
+                <button id="payButton" class="btn" style="background: #d4af37; color: #000; font-weight: bold;">
+                   <i class='bx bxs-credit-card'></i> Payer Acompte (500F)
+                </button>
                 <a href="https://wa.me/237678689036" target="_blank" class="btn btn-whatsapp">
                     <i class='bx bxl-whatsapp'></i> WhatsApp
                 </a>
             </div>
         </div>
-
         <div class="home-img">
             <img src="images/youssouf-idriss-profil.jpg.jpg" alt="Artisan menuisier travaillant le bois">
         </div>
@@ -91,26 +91,23 @@
 
     <section class="services" id="services">
         <h2 class="heading">Notre <span>Savoir-Faire</span></h2>
-
         <div class="services-container">
             <div class="services-box">
                 <i class='bx bxs-component'></i>
                 <h3>Menuiserie & Ébénisterie</h3>
-                <p>Création de mobilier sur mesure : lits, armoires, tables, chaises et canapés. Nous donnons vie à vos idées avec des essences de bois nobles.</p>
+                <p>Création de mobilier sur mesure : lits, armoires, tables, chaises et canapés.</p>
                 <a href="#projets" class="btn">Voir les projets</a>
             </div>
-
             <div class="services-box">
                 <i class='bx bxs-kitchen'></i>
                 <h3>Agencement Intérieur</h3>
-                <p>Conception et installation de cuisines, dressings, bureaux et portes en bois massif. Optimisation de l'espace et fonctionnalité garanties.</p>
+                <p>Conception et installation de cuisines, dressings, bureaux et portes en bois massif.</p>
                 <a href="#projets" class="btn">Voir les projets</a>
             </div>
-
             <div class="services-box">
                 <i class='bx bxs-home-alt-2'></i>
                 <h3>Charpenterie & Rénovation</h3>
-                <p>Travaux de charpente, réfection de meubles anciens, et prestations de services techniques. Nous redonnons vie à vos structures.</p>
+                <p>Travaux de charpente, réfection de meubles anciens, et prestations techniques.</p>
                 <a href="#projets" class="btn">Voir les projets</a>
             </div>
         </div>
@@ -118,191 +115,96 @@
 
     <section class="portfolio" id="projets">
         <h2 class="heading">Nos <span>Réalisations</span></h2>
-
         <div class="portfolio-filter">
             <button class="filter-btn active" data-filter="all">Tous les Projets</button>
             <button class="filter-btn" data-filter="ameublement">Ameublement</button>
             <button class="filter-btn" data-filter="agencement">Agencement</button>
             <button class="filter-btn" data-filter="renovation">Rénovation</button>
         </div>
-
-        <div class="portfolio-container" id="portfolio-list">
-            </div>
+        <div class="portfolio-container" id="portfolio-list"></div>
     </section>
 
     <section class="qualite" id="qualite">
         <h2 class="heading">Notre <span>Engagement</span></h2>
         <div class="qualite-container">
-            <div class="qualite-item">
-                <i class='bx bxs-badge-check'></i>
-                <h3>Finitions Vernies Haut de Gamme</h3>
-                <p>Nous utilisons des produits de finition professionnelle pour garantir un rendu esthétique impeccable, une résistance aux rayures et une longévité maximale.</p>
-            </div>
-            <div class="qualite-item">
-                <i class='bx bxs-timer'></i>
-                <h3>Respect Scrupuleux des Délais</h3>
-                <p>Un meuble sur mesure est un investissement. Nous nous engageons contractuellement à respecter la date de livraison convenue, sans compromis sur la qualité.</p>
-            </div>
-            <div class="qualite-item">
-                <i class='bx bxs-tree'></i>
-                <h3>Sélection Rigoureuse du Bois</h3>
-                <p>Nous privilégions le bois local traité, sélectionné pour sa robustesse et son esthétique, garantissant un produit écologique et durable.</p>
-            </div>
+            <div class="qualite-item"><i class='bx bxs-badge-check'></i><h3>Finitions Haut de Gamme</h3><p>Rendu esthétique impeccable et longévité maximale.</p></div>
+            <div class="qualite-item"><i class='bx bxs-timer'></i><h3>Respect des Délais</h3><p>Engagement contractuel sur la date de livraison.</p></div>
+            <div class="qualite-item"><i class='bx bxs-tree'></i><h3>Sélection du Bois</h3><p>Bois local traité, robuste et écologique.</p></div>
         </div>
     </section>
 
-   <section class="about" id="a-propos" style="background: var(--clr-bg); padding: 10rem 9% 2rem; color: var(--clr-white);">
+    <section class="about" id="a-propos" style="background: var(--clr-bg); padding: 10rem 9% 2rem; color: var(--clr-white);">
         <div class="about-container" style="display: flex; align-items: center; gap: 5rem; flex-wrap: wrap;">
-            
             <div class="about-img" style="flex: 1 1 40rem; position: relative;">
-                <img src="images/youssouf-idriss-menuisier-bafoussam.jpg.jpg" alt="Youssouf Idriss Artisan" style="width: 100%; border-radius: 2rem; border: 2px solid var(--clr-gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);">
+                <img src="images/youssouf-idriss-menuisier-bafoussam.jpg.jpg" alt="Youssouf Idriss Artisan" style="width: 100%; border-radius: 2rem; border: 2px solid var(--clr-gold);">
             </div>
-
             <div class="about-content" style="flex: 1 1 40rem;">
-                <h2 class="heading" style="text-align: left; margin-bottom: 2rem; color: var(--clr-white);">L'Histoire de <span>L'Atelier</span></h2>
-                
-                <p style="font-size: 1.6rem; line-height: 1.8; margin-bottom: 2rem; color: #ccc;">
-                    Passionné par les essences nobles et le design durable, <span style="color: var(--clr-gold); font-weight: 600;">Youssouf Idriss</span> a fondé son atelier à Bafoussam et a kombou, babadjou avec une vision simple : transformer chaque pièce de bois en un héritage.
-                </p>
-
-                <p style="font-size: 1.6rem; line-height: 1.8; color: #ccc;">
-                    Spécialiste de l'ébénisterie sur mesure, il conçoit des meubles uniques qui subliment votre intérieur. Que vous soyez à <strong>Douala, Yaoundé</strong> ou n'importe où au <strong>Cameroun</strong>, Youssouf garantit une installation parfaite et un respect strict des délais.
-                </p>
-
-                <div style="margin-top: 3rem;">
-                    <a href="#contact" class="btn">Discuter de mon projet</a>
-                </div>
+                <h2 class="heading" style="text-align: left; margin-bottom: 2rem;">L'Histoire de <span>L'Atelier</span></h2>
+                <p style="font-size: 1.6rem; line-height: 1.8; color: #ccc;">Passionné par les essences nobles, <span style="color: var(--clr-gold);">Youssouf Idriss</span> transforme chaque pièce de bois en héritage à Bafoussam, Kombou et Babadjou.</p>
+                <a href="#contact" class="btn">Discuter de mon projet</a>
             </div>
         </div>
     </section>
 
     <section class="temoignages" id="temoignages">
         <h2 class="heading">Ce que <span>Nos Clients</span> disent</h2>
-        
-        <div class="temoignages-slider" id="temoignages-slider">
-            </div>
-
-        <h3 class="sub-heading">Partagez Votre Expérience</h3>
-        <form id="add-temoignage-form" class="contact-form" style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid var(--clr-gold); border-radius: 0.8rem;">
-            <p class="form-instruction">Votre avis est précieux. Laissez votre témoignage ci-dessous.</p>
-            <input type="text" id="tem-auteur" placeholder="Votre Nom ou Prénom" required>
-            <select id="tem-note" required style="width: 100%; padding: 1.5rem; margin: 0.7rem 0; border-radius: 0.8rem; color: var(--clr-dark); background-color: var(--clr-white);">
-                <option value="" disabled selected>Note (Satisfaction)</option>
+        <div class="temoignages-slider" id="temoignages-slider"></div>
+        <form id="add-temoignage-form" class="contact-form" style="max-width: 600px; margin: 20px auto; border: 1px solid var(--clr-gold); border-radius: 0.8rem; padding: 20px;">
+            <input type="text" id="tem-auteur" placeholder="Votre Nom" required>
+            <select id="tem-note" required style="width: 100%; padding: 1.5rem; margin: 0.7rem 0;">
                 <option value="5 étoiles">🌟🌟🌟🌟🌟 (5 étoiles)</option>
                 <option value="4 étoiles">🌟🌟🌟🌟 (4 étoiles)</option>
-                <option value="3 étoiles">🌟🌟🌟 (3 étoiles)</option>
             </select>
-            <textarea id="tem-citation" cols="30" rows="5" placeholder="Votre Témoignage Détaillé (Citation)" required></textarea>
-            <button type="submit" class="btn">Soumettre mon Témoignage</button>
-            <div id="tem-message" style="margin-top: 10px; color: var(--clr-gold);"></div>
+            <textarea id="tem-citation" placeholder="Votre Témoignage" required></textarea>
+            <button type="submit" class="btn">Soumettre</button>
         </form>
     </section>
 
     <section class="contact" id="contact">
         <h2 class="heading">Parlons <span>Bois</span></h2>
-
-        <form action="#" id="contact-form" class="contact-form">
-            <p class="form-instruction">Laissez-nous un message et nous vous recontacterons dans les 24 heures.</p>
+        <form id="contact-form" class="contact-form">
             <div class="input-box">
                 <input type="text" id="contact-name" placeholder="Nom Complet" required>
-                <input type="email" id="contact-email" placeholder="Adresse Email" required>
+                <input type="email" id="contact-email" placeholder="Email" required>
             </div>
-            <div class="input-box">
-                <input type="text" id="contact-phone" placeholder="Numéro de Téléphone" required>
-                <input type="text" id="contact-subject" placeholder="Sujet / Type de Projet" required> 
-            </div>
-            <textarea id="contact-message" cols="30" rows="10" placeholder="Votre Message Détaillé" required></textarea>
-            <button type="submit" class="btn">Envoyer le Message</button>
+            <textarea id="contact-message" cols="30" rows="10" placeholder="Votre Message" required></textarea>
+            <button type="submit" class="btn">Envoyer</button>
         </form>
-
-        <div class="contact-info">
-            <div class="info-item">
-                <i class='bx bxs-phone-call'></i>
-                <h3>Appel & WhatsApp</h3>
-                <p><a href="tel:+237678689036">+237 678 68 90 36</a></p>
-            </div>
-            <div class="info-item">
-                <i class='bx bxs-envelope'></i>
-                <h3>Email Professionnel</h3>
-                <p><a href="mailto:jinjayoussouf@gmail.com">jinjayoussouf@gmail.com</a></p>
-            </div>
-            <div class="info-item">
-                <i class='bx bxs-map'></i>
-                <h3>Atelier & Zone d'intervention</h3>
-                <p>Basé à <strong>Bafoussam et à Kombou, Babadjou</strong></p>
-                <p>🚀 Service disponible dans <strong>tout le Cameroun</strong></p>
-            </div>
-            
-            <div class="social-links">
-                <a href="https://www.facebook.com/profile.php?id=100071631619403" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://vm.tiktok.com/ZMHw3NLp6eWuj-57mJ2/" target="_blank"><i class="fab fa-tiktok"></i></a>
-                <a href="https://wa.me/237678689036" target="_blank"><i class='bx bxl-whatsapp'></i></a>
-            </div>
-        </div>
     </section>
 
     <div id="admin-trigger" style="text-align: center; margin-bottom: 20px; cursor: pointer; color: var(--clr-gold);">
         <i class='bx bxs-lock-alt'></i> Accès Artisan
     </div>
 
-    <div id="login-modal" class="admin-modal hidden">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Connexion Artisan</h2>
-            <form id="login-form"> 
-                <input type="email" id="login-email" placeholder="Email" required> 
-                <input type="password" id="login-password" placeholder="Mot de passe" required> 
-                <button type="submit" class="btn">Se connecter</button>
-            </form>
-        </div>
-    </div>
-
-    <section id="admin-panel" class="hidden" style="background: var(--clr-white); color: var(--clr-dark); border-top: 5px solid var(--clr-gold);">
-        <div class="heading">
-            <h2>Espace <span>Atelier</span></h2>
-            <button id="logout-btn" class="btn" style="background: red; color: white; font-size: 0.8rem;">Déconnexion</button>
-        </div>
-
-        <div class="admin-container" style="max-width: 600px; margin: 0 auto;">
-            
-            <h3>Ajouter une nouvelle réalisation</h3>
-            <form id="add-project-form" class="contact-form">
-                <input type="text" id="proj-title" placeholder="Titre du meuble (ex: Lit Royal)" required>
-                <select id="proj-category" required style="width: 100%; padding: 1.5rem; margin: 0.7rem 0; border-radius: 0.8rem; color: var(--clr-dark);">
-                    <option value="" disabled selected>Choisir une catégorie...</option>
-                    <option value="ameublement">Ameublement</option>
-                    <option value="agencement">Agencement / Cuisine</option>
-                    <option value="renovation">Rénovation</option>
-                </select>
-                <textarea id="proj-desc" placeholder="Description du travail effectué..." required></textarea>
-                <label style="display: block; text-align: left; margin-top: 10px; font-weight: 600;">URL de la Photo du projet :</label>
-                <input type="text" id="proj-image-url" placeholder="Collez le lien direct de l'image ici" required>
-                <button type="submit" class="btn">Publier le projet</button>
-            </form>
-
-            <h3 style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 30px;">Modération des Témoignages</h3>
-            <div id="admin-temoignages-list" style="max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #eee;">
-            </div>
-
-            <h3 style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 30px;">Boîte de Réception des Messages</h3>
-            <div id="admin-messages-list" style="max-height: 400px; overflow-y: auto; padding: 10px; border: 1px solid #eee;">
-                <p>Chargement des messages...</p>
-            </div>
-
-        </div>
+    <section id="admin-panel" class="hidden" style="background: var(--clr-white); color: var(--clr-dark); padding: 5rem 9%;">
+        <div class="heading"><h2>Espace <span>Atelier</span></h2></div>
+        <form id="add-project-form" class="contact-form">
+            <input type="text" id="proj-title" placeholder="Titre du meuble" required>
+            <input type="text" id="proj-image-url" placeholder="URL de la Photo" required>
+            <button type="submit" class="btn">Publier</button>
+        </form>
     </section>
 
     <footer class="footer">
-        <div class="footer-text">
-            <p>Copyright &copy; 2025 Youssouf de Paris Meuble. Tous droits réservés.</p>
-        </div>
-        <div class="footer-iconTop">
-            <a href="#accueil"><i class='bx bx-up-arrow-alt'></i></a>
-        </div>
+        <p>Copyright &copy; 2025 Youssouf de Paris Meuble. Tous droits réservés.</p>
     </footer> 
     
     <script type="module" src="js/firebase-app.js"></script> 
     <script src="js/script.js"></script> 
 
+    <script>
+        campay.options({
+            payButtonId: "payButton", 
+            description: "Acompte Paris Meuble",
+            amount: "500", 
+            currency: "XAF",
+            externalReference: "REF-" + Date.now(),
+            redirectUrl: "https://valdeskuete.github.io/youssouf/", 
+        });
+        
+        campay.onSuccess = function (data) { 
+            alert('Paiement Réussi ! Référence: ' + data.reference);
+        }
+    </script>
 </body>
 </html>
