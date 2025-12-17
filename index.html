@@ -305,27 +305,5 @@
     <script type="module" src="js/firebase-app.js"></script> 
     <script src="js/script.js"></script> 
 
-    <script src="https://demo.campay.net/sdk/js?app-id=Wkhdc4fdOVb_o9MtZhn0Kai-QfdUGPkAh81dOANo8gPsaPCSo3JDYHuv6S2rltdcv35ZHJAAOPcdOzoio8JXcw"></script>
-
-<script>
-    campay.options({
-        payButtonId: "payButton", 
-        description: "Achat Meuble Paris Meuble",
-        amount: "500", // Met le montant que tu veux pour le test (ex: 500 FCFA)
-        currency: "XAF",
-        externalReference: "CMD-" + Date.now(), // Génère un numéro de commande unique
-        redirectUrl: "https://valdeskuete.github.io/idriss/", // Où le client revient après le paiement
-    });
-    
-    campay.onSuccess = function (data) { 
-        alert('Paiement Réussi ! Merci de votre confiance.\nRéférence: ' + data.reference);
-        // Ici tu peux ajouter du code pour enregistrer la commande dans Firebase
-    }
-    
-    campay.onFail = function (data) { 
-        alert('Le paiement a échoué. Veuillez réessayer.');
-    }
-</script>
-
 </body>
 </html>
